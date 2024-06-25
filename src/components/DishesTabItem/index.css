@@ -1,0 +1,10 @@
+.tabItem {
+    color: #ffffff;
+    list-style-type: none;
+    margin-right: 20px;
+    padding-bottom: 8px;
+}
+.activeTabCls {
+    color: #e97d55;
+    border-bottom: 3px solid #e97d55;
+}

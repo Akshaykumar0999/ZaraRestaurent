@@ -1,0 +1,55 @@
+.dashboard-revenue-cards {
+    width: 68%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+.revenue-list-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #363535;
+    padding: 15px;
+    border-radius: 10px;
+}
+.revenue-first-icons {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: aqua;
+}
+.revenue-icon-card {
+    background-color: #464646;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    border-radius: 3px;
+}
+.revenue-icon {
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(77, 154, 255);
+}
+.revenue-first-icons-ratio {
+    color: aqua;
+    font-size: 12px;
+    margin-left: 15px;
+}
+.revenue-amount-price {
+    font-size: 25px;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+    margin-top: 10px;
+}
+.revenue-des {
+    width: 100%;
+    font-size: 15px;
+    font-weight: bold;
+    color: #b7b7b7;
+}
