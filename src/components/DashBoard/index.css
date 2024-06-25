@@ -1,0 +1,330 @@
+.dashboard-home-main-conteiner {
+    width: 95%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dashboard-headers-card {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #6e6e6e;
+}
+
+.dashboard-first-container {
+    width: 68%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 20px;
+}
+
+.dashboard-revenue-cards {
+    height: 25%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.revenue-list-card {
+    width: 28%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #201f21a8;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.revenue-first-icons {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: aqua;
+}
+
+.revenue-icon-card {
+    background-color: #464646;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.revenue-icon {
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(77, 154, 255);
+}
+
+.revenue-first-icons-ratio {
+    color: aqua;
+    font-size: 12px;
+    margin-left: 15px;
+}
+
+.revenue-amount-price {
+    font-size: 25px;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.revenue-des {
+    width: 100%;
+    font-size: 15px;
+    font-weight: bold;
+    color: #b7b7b7;
+}
+
+.dashboard-order-report-card {
+    width: 100%;
+    height: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #201f21a8;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 10px 5px 0px 5px;
+    margin-bottom: 10px;
+}
+
+.oredr-report-header {
+    width: 97%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-name {
+    color: #ffffff;
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.filter-card {
+    border: 1px solid #818181;
+    border-radius: 5px;
+    color: #ffffff;
+    background-color: transparent;
+    padding: 5px 10px;
+}
+
+.dashboard-table-main {
+    width: 98%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.dash-b-table-head {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 40px;
+    border-bottom: 1px solid #818181;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.table-rows-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.th-name-card {
+    width: 24%;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: left;
+}
+
+.table-customer-image {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    margin-right: 10px;
+}
+
+.dash-b-table-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.tr-name-card {
+    height: inherit;
+    width: 24%;
+    color: #c7c5c5;
+    font-size: 17px;
+    font-weight: 400;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-right: 10px;
+    padding-left: 5px;
+}
+
+.preparing {
+    background-color: #5d53a482;
+    color: rgb(25, 36, 88)82;
+    border-radius: 25px;
+    padding: 2px 8px;
+    width: 100px;
+    text-align: center;
+}
+
+.pending {
+    background-color: #f3854582;
+    color: rgb(192, 81, 71)82;
+    border-radius: 25px;
+    padding: 2px 8px;
+    width: 100px;
+    text-align: center;
+}
+
+.completed {
+    background-color: #37e36582;
+    color: rgb(25, 36, 88)82;
+    border-radius: 25px;
+    padding: 2px 8px;
+    width: 100px;
+    text-align: center;
+}
+
+.dashboard-second-container {
+    width: 28%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items:center;
+    padding: 10px;
+}
+
+.most-ordered-dish-image-ele {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.most-ordered-container {
+    width: 90%;
+    height: 50%;
+    background-color: #201f21a8;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+    margin: 10px;
+    margin-top: 20px;
+}
+
+.most-ordered-select {
+    background-color: transparent;
+    border: 1px solid #505050;
+    color: #ffffff;
+    border-radius: 5px;
+    height: 20px;
+}
+
+.mostordered-ul-list {
+    width: 100%;
+    padding-left: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-top: 1px solid #6e6e6e;
+    padding-top: 20px;
+}
+
+.most-ordered-list-item {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+
+.details-of-ordered-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.peichart-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.most-ordered-item-name {
+    color: #eaeaea;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.most-ordered-item-des {
+    color: #b3b3b3;
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.most-ordered-bottom {
+    width: 100%;
+    display: flex;
+}
+.view-all-orders {
+    width: 100%;
+    background-color: transparent;
+    border: 2px solid #ef7c65;
+    color: #ef7c65;
+    margin: 10px 0px;
+}
+
+.colors-names {
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pieschart-names {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    width: 50%;
+}

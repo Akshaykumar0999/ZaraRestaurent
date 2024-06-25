@@ -9,22 +9,22 @@ import CartList from '../CartList';
 
 const RestroItemsTabList = [
     {
-        TabId:'HOTDISHES', 
+        TabId: 'HOTDISHES',
         TabName: 'Hot Dishes',
-    },{
-        TabId:'COLDDISHES', 
+    }, {
+        TabId: 'COLDDISHES',
         TabName: 'Cold Dishes',
-    },{
-        TabId:'SOUP', 
+    }, {
+        TabId: 'SOUP',
         TabName: 'Soup',
-    },{
-        TabId:'GRILL', 
+    }, {
+        TabId: 'GRILL',
         TabName: 'Grill',
-    },{
-        TabId:'APPETIZER', 
+    }, {
+        TabId: 'APPETIZER',
         TabName: 'Appetizer',
-    },{
-        TabId:'DESSERT', 
+    }, {
+        TabId: 'DESSERT',
         TabName: 'Dessert',
     },
 ]
@@ -90,6 +90,7 @@ const RestroItemsTabList = [
 
 const Home = () => {
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
+    const [AllTabList, setAllTabList] = useState([])
     const [ActiveTabItem, setActiveTabItem] = useState(RestroItemsTabList[0].TabId)
     // const [qty, setQty] = useState(1)
     const [selectedTableNo, setSelectedTableNo] = useState(1)
@@ -97,27 +98,53 @@ const Home = () => {
     const [cartDishesList, setCartDishesList] = useState([])
     let showdate = new Date();
     let todaysDate = showdate.toUTCString();
-    const currentDate = todaysDate.slice(0,16)
+    const currentDate = todaysDate.slice(0, 16)
 
-    useEffect(()=>{
-        fetch("https://resbackend.gharxpert.in/getProducts", {
-            method:"GET",
-            headers:{
-              "Authorization" : localStorage.getItem('token')
-            }}).then((data)=>data.json()).then((res) => {
-                const updatedList = res.products.map((eachList => 
-                    ({
-                        id: eachList.id,
-                        name: eachList.product_name,
-                        imageUrl: eachList.image,
-                        price: eachList.unit_price,
-                        quantity: 1,
-                    })
-                ))
-                setAllRestroDishesList(updatedList)
+
+    useEffect(() => {
+        fetch("https://resbackend.gharxpert.in/getCategories", {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data) => data.json()).then((res) => {
+            const updatedTabList = res.categories.map((eachList =>
+            ({
+                id: eachList.id,
+                companyId: eachList.companyId,
+                categoryName: eachList.category_name,
+                description: eachList.description,
+                image: eachList.image,
+                createdAt: eachList.created_at,
+                updatedAt: eachList.updated_at,
             })
-        .catch((error)=>{console.log(error)});
-      },[])
+            ))
+            setAllTabList(updatedTabList)
+        })
+            .catch((error) => { console.log(error) });
+    }, [])
+
+    useEffect(() => {
+        fetch("https://resbackend.gharxpert.in/getProducts", {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data) => data.json()).then((res) => {
+            const updatedList = res.products.map((eachList =>
+            ({
+                id: eachList.id,
+                name: eachList.product_name,
+                imageUrl: eachList.image,
+                price: eachList.unit_price,
+                quantity: 1,
+            })
+            ))
+            setAllRestroDishesList(updatedList)
+        })
+            .catch((error) => { console.log(error) });
+    }, [])
+
     const onClickActiveTab = (id) => {
         setActiveTabItem(id)
     }
@@ -127,7 +154,7 @@ const Home = () => {
 
     const onClickSelectDish = (id) => {
         const cartItemId = AllRestroDishesList.findIndex(
-            item => item.id === id 
+            item => item.id === id
         )
         setCartDishesList([...cartDishesList, AllRestroDishesList[cartItemId]])
         const cartObject = AllRestroDishesList[cartItemId]
@@ -136,7 +163,7 @@ const Home = () => {
 
     const onChangeQtyItem = (value, id) => {
         const cartActiveItem = cartDishesList.findIndex(
-            item => item.id === id 
+            item => item.id === id
         )
         // setCartDishesList({...cartDishesList[cartActiveItem], price: cartDishesList[cartActiveItem].price*value})
         // const updatedprice = (cartDishesList[cartActiveItem].price) * value
@@ -144,7 +171,7 @@ const Home = () => {
         //     setCartDishesList(eachItem.id === id && ({...eachItem, price: updatedprice}))
         // })
     }
-    
+
 
 
     // const onClickSelectDish = (id) => {
@@ -153,11 +180,11 @@ const Home = () => {
     //     )
     //     const cartItem = AllRestroDishesList[cartItemId]
     //     const newItem = { ...cartItem, quantity: 1 }  // Initialize quantity to 1
-    
+
     //     setCartDishesList([...cartDishesList, newItem])
     //     setTotalPrice(prevState => (prevState + parseInt(cartItem.price)))
     // }
-    
+
     // const onChangeQtyItem = (value, id) => {
     //     const updatedCartList = cartDishesList.map(item => {
     //         if (item.id === id) {
@@ -166,9 +193,9 @@ const Home = () => {
     //         }
     //         return item
     //     })
-    
+
     //     setCartDishesList(updatedCartList)
-    
+
     //     // Recalculate total price
     //     const newTotalPrice = updatedCartList.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     //     setTotalPrice(newTotalPrice)
@@ -190,18 +217,18 @@ const Home = () => {
                         </div>
                         <div className='serach-bar-container'>
                             <FiSearch className='search-icon' />
-                            <input type='search' className='search-bar-card' placeholder='Search for Food, coffee, ext..'/>
+                            <input type='search' className='search-bar-card' placeholder='Search for Food, coffee, ext..' />
                         </div>
                     </div>
 
                     {/* Product Details Tab Selctor container */}
                     <ul className='tablist-ul-card'>
-                        {RestroItemsTabList.map((eachDish) => <DishesTabItem dishDetails={eachDish} key={eachDish.TabId} isActive={ActiveTabItem === eachDish.TabId} onClickActiveTab={onClickActiveTab} />)}
+                        {AllTabList.map((eachDish) => <DishesTabItem dishDetails={eachDish} key={eachDish.id} isActive={ActiveTabItem === eachDish.id} onClickActiveTab={onClickActiveTab} />)}
                     </ul>
 
                     {/* Dishes Headers Container */}
                     <div className='All-dishes-headers-card'>
-                        <h3 className='choose-dishes'>Choose Dishes</h3> 
+                        <h3 className='choose-dishes'>Choose Dishes</h3>
                         <div className='table-selector-container'>
                             <p className='table-name'>Table</p>
                             <select className='table-selctor-container' onChange={onChangeTabelNo}>
@@ -220,9 +247,9 @@ const Home = () => {
                     {/* All Dishes Item List */}
                     <ul className='all-restro-dishes-ul-container'>
                         {AllRestroDishesList.map((eachdishItem, index) =>
-                            (
-                                <DishDetailsCard dishDetails={eachdishItem} key={index} onClickSelectDish={onClickSelectDish} />
-                            )
+                        (
+                            <DishDetailsCard dishDetails={eachdishItem} key={index} onClickSelectDish={onClickSelectDish} />
+                        )
                         )}
                     </ul>
                 </div>
@@ -234,7 +261,7 @@ const Home = () => {
                         <h3 className='order-type'>Delivery</h3>
                     </div>
                     {/* orders acrt list table  */}
-                        
+
                     <table className='table-orders-cart-list'>
                         <thead className='table-order-cart-headers'>
                             <th className='table-cart-header-name'>Name</th>
@@ -243,7 +270,7 @@ const Home = () => {
                         </thead>
                         <tbody className='table-body-container'>
                             <div className='cartList-ul-container'>
-                                {cartDishesList.map(eachacartItem  => (
+                                {cartDishesList.map(eachacartItem => (
                                     <CartList cartItemmDetails={eachacartItem} key={eachacartItem.id} onChangeQtyItem={onChangeQtyItem} />
                                     // <div className='table-order-cart-list-card'>
                                     //     <tr className='table-order-cart-list-items'>
@@ -257,12 +284,12 @@ const Home = () => {
                                     //     </div>
                                     // </div>
                                 ))}
-                            </div> 
-                            
+                            </div>
+
                         </tbody>
                     </table>
 
-                    
+
                     <div className='order-cart-pric-container'>
                         <div className='discount-card'>
                             <h3 className='discount-headre'>Discount</h3>

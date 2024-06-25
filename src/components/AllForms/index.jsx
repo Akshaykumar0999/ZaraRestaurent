@@ -1,7 +1,7 @@
 import Navbar from '../Navbar'
 import './index.css'
 import FormsTabItem from '../FormsTabItem'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 const AllEntryFormTabsList = [
     {
@@ -22,7 +22,7 @@ const AllEntryFormTabsList = [
         tabCategory : 'OTHERS',
     },
 ]
-const About = () => {
+const AllForms = () => {
     const [formActTab, setFormActTab] = useState(AllEntryFormTabsList[0].id)
     const [productName, setProductName] = useState('')
     const [price, setPrice] = useState(0)
@@ -59,37 +59,58 @@ const About = () => {
     };
 
     const onSubmitProductForm = async (event) => {
-        event.preventDefault()
-        const newProductObject = {
-            id: uuidv4(),
-            name: productName,
-            imageUrl: image,
-            price: price,
-            quantity: category,
-            mrp: Mrp,
-            discount: discount
-        }
-        const url = 'https://resbackend.gharxpert.in/getProducts'
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(newProductObject),
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization" : localStorage.getItem('token')
-            }
-        }
-        const response = await fetch(url, options)
-        const fetchedData = await response.json() 
-        console.log(fetchedData)
-        if (response.ok) {
-            console.log('Dish updated successfully', data.dish);
-            // Optionally update the state with the updated dish
-            return data.dish;
-        } else {
-            console.error('Failed to update dish', data.message);
-        }
-        
+        event.preventDefault();
+    //     const formData = {
+    //         id: uuidv4(),
+    //         name: productName,
+    //         imageUrl: image,
+    //         price: price,
+    //     }
+
+    // try {
+    //   const response = await fetch('https://resbackend.gharxpert.in/getProducts', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       "Authorization" : localStorage.getItem('token')
+    //     },
+    //     body: JSON.stringify(formData)
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error('Network response was not ok');
+    //   }
+
+    //   const result = await response.json();
+    //   console.log('Success:', result);
+    //   // Handle success (e.g., show a message, update state/UI)
+    // } catch (error) {
+    //   console.error('Error:', error);
+    // }
+
+    
+        // event.preventDefault()
+        // const newProductObject = {
+        //     id: uuidv4(),
+        //     name: productName,
+        //     imageUrl: image,
+        //     price: price,
+        // }
+        // const url = 'https://resbackend.gharxpert.in/getProducts'
+        // const options = {
+        //     method: 'POST',
+        //     body: JSON.stringify(newProductObject),
+        //     headers:{
+        //         "Content-Type":"application/json",
+        //         "Authorization" : localStorage.getItem('token')
+        //     }
+        // }
+        // fetch(url, options).then(response => {console.log(response)}).catch(error => console.log(error))
     }
+
+    // useEffect(() => {
+    //     onSubmitProductForm()
+    // }, [])
     return (
         <div className='Home-main-container'>
             <div className='nav-bar'>
@@ -143,4 +164,4 @@ const About = () => {
     )
 }
 
-export default About
+export default AllForms

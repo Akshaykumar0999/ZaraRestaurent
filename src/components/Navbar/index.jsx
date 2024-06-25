@@ -17,11 +17,11 @@ const NavDetailsList = [
     },{
         id: 2,
         navIcon: <LuBadgePercent />,
-        toLink: '/about',
+        toLink: '/allFroms',
     },{
         id: 3,
         navIcon: <VscPieChart />,
-        toLink: '/contact',
+        toLink: '/dashboard',
     },{
         id: 4,
         navIcon: <MdNotificationsNone />,

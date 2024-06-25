@@ -1,14 +1,14 @@
 import './index.css'
 
 const DishesTabItem = ({dishDetails, isActive, onClickActiveTab}) => {
-    const {TabName, TabId} = dishDetails
+    const {categoryName, id} = dishDetails
     const ActivetabStyle = isActive && 'activeTabCls'
     const onClickTab = () => {
-        onClickActiveTab(TabId)
+        onClickActiveTab(id)
     } 
     return(
         <li className={`tabItem ${ActivetabStyle}`} onClick={onClickTab}>
-            {TabName}
+            {categoryName}
         </li>
     )
 }
