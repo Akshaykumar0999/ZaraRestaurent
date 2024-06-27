@@ -20,12 +20,13 @@ const Login = () => {
 
     const onFailureSubmit = errorMsg => {
         setErrorMsg(true, errorMsg)
+        alert(errorMsg);
     }
 
     const onSumbitCredentials = async (event) => {
         event.preventDefault()
         const userDetails = { email:username, password }
-        const url = 'https://posbackend.gharxpert.in/login'
+        const url = 'https://resbackend.gharxpert.in/login'
         const options = {
             method: 'POST',
             body: JSON.stringify(userDetails),
@@ -36,13 +37,13 @@ const Login = () => {
         const response = await fetch(url, options)
         const fetchedData = await response.json()
         console.log(fetchedData)
-        if (response.ok === true) {
+        if (fetchedData.token) {
             onSuccessSubmit(fetchedData.token)
         } else {
-            onFailureSubmit(fetchedData.error_msg)
+            onFailureSubmit(fetchedData.message)
         }
     }
-    console.log({username, password})
+   
 
     return (
         <div className='Login-container'>
@@ -61,7 +62,7 @@ const Login = () => {
                             <label className='input-label-card' htmlFor='username-password'>Password</label>
                             <input className='input-card' type='text' id='username-password' onChange={onChangePassword} />
                         </div>
-                        <button type='submit' className='form-button' >
+                        <button type='submit' onClick={(e)=>onSumbitCredentials(e)} className='form-button' >
                             Login
                         </button>
                     </form>
