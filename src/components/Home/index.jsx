@@ -6,7 +6,8 @@ import { FiSearch } from "react-icons/fi";
 
 import DishDetailsCard from '../DishDetailsCard';
 import CartList from '../CartList';
-
+import { useDispatch, useSelector } from 'react-redux';
+import {add,remove,increment,decrement,setTotalAmount, clearCart} from "../../store/cartSlice";
 const RestroItemsTabList = [
     {
         TabId: 'HOTDISHES',
@@ -89,6 +90,12 @@ const RestroItemsTabList = [
 // ]
 
 const Home = () => {
+    const dispatch=useDispatch();
+    const {cart}=useSelector((state)=>state);
+    console.log(cart.cart.length)
+    useEffect(()=>{
+        dispatch(setTotalAmount());
+    },)
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
     const [AllTabList, setAllTabList] = useState([])
     const [ActiveTabItem, setActiveTabItem] = useState(RestroItemsTabList[0].TabId)
@@ -134,9 +141,9 @@ const Home = () => {
             const updatedList = res.products.map((eachList =>
             ({
                 id: eachList.id,
-                name: eachList.product_name,
+                name: eachList.name,
                 imageUrl: eachList.image,
-                price: eachList.unit_price,
+                price: eachList.price,
                 quantity: 1,
             })
             ))
@@ -152,13 +159,16 @@ const Home = () => {
         setSelectedTableNo(event.target.value)
     }
 
-    const onClickSelectDish = (id) => {
-        const cartItemId = AllRestroDishesList.findIndex(
-            item => item.id === id
-        )
-        setCartDishesList([...cartDishesList, AllRestroDishesList[cartItemId]])
-        const cartObject = AllRestroDishesList[cartItemId]
-        setTotalPrice(prevState => (prevState + parseInt(cartObject.price)))
+    const onClickSelectDish = (item) => {
+
+        dispatch(add(item))
+
+        // const cartItemId = AllRestroDishesList.findIndex(
+        //     item => item.id === id
+        // )
+        // setCartDishesList([...cartDishesList, AllRestroDishesList[cartItemId]])
+        // const cartObject = AllRestroDishesList[cartItemId]
+        // setTotalPrice(prevState => (prevState + parseInt(cartObject.price)))
     }
 
     const onChangeQtyItem = (value, id) => {
@@ -212,7 +222,7 @@ const Home = () => {
                     {/* Home-page-headers-container */}
                     <div className='home-page-headers-card'>
                         <div>
-                            <h1 className='title-of-restro-name'>ZARA RESTAURENT</h1>
+                            <h1 className='title-of-restro-name'>ZARA RESTAURANT</h1>
                             <p className='current-date'>{currentDate}</p>
                         </div>
                         <div className='serach-bar-container'>
@@ -270,7 +280,7 @@ const Home = () => {
                         </thead>
                         <tbody className='table-body-container'>
                             <div className='cartList-ul-container'>
-                                {cartDishesList.map(eachacartItem => (
+                                {cart.cart.map(eachacartItem => (
                                     <CartList cartItemmDetails={eachacartItem} key={eachacartItem.id} onChangeQtyItem={onChangeQtyItem} />
                                     // <div className='table-order-cart-list-card'>
                                     //     <tr className='table-order-cart-list-items'>
@@ -297,9 +307,36 @@ const Home = () => {
                         </div>
                         <div className='discount-card'>
                             <h3 className='discount-headre'>Subtotal</h3>
-                            <p className='discount-value'>{totalPrice}<span className='price-text'>Rs</span></p>
+                            <p className='discount-value'>{cart.totalAmount}<span className='price-text'>Rs</span></p>
                         </div>
-                        <button className='order-place-button'>Continue to Place Order</button>
+                        <button className='order-place-button' onClick={async()=>{
+                            try {
+                                const response=await fetch(`https://resbackend.gharxpert.in/place_order2`,{
+                                    method:"POST",
+                                    headers:{
+                                        "Authorization" : localStorage.getItem('token')     
+                                        ,"Content-Type" : "application/json"
+                                    },
+                                    body : JSON.stringify(cart)
+                                    
+                                })
+                                const res=await response.json();
+                                console.log(res);
+                                if(res.order_id){
+                                    
+                                    
+                                  
+                                    localStorage.setItem("orderId",res.order_id);
+                                    alert(res.message);
+                                    dispatch(clearCart())
+                                    return;
+                                }
+                                alert(res.message);
+                              
+                            } catch (error) {
+                                alert(error.message);
+                            }
+                        }}>Continue to Place Order</button>
                     </div>
 
                 </div>

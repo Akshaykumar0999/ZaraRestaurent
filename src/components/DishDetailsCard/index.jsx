@@ -2,8 +2,9 @@ import './index.css'
 
 const DishDetailsCard = ({dishDetails, onClickSelectDish}) => {
     const {id, name, price, imageUrl} = dishDetails
+    console.log(dishDetails)
     const onSelectdish = () => {
-        onClickSelectDish(id)
+        onClickSelectDish(dishDetails)
     }
     return(
         <li className='Restro-dish-item-card' onClick={onSelectdish}>
