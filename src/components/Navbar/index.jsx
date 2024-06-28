@@ -25,11 +25,11 @@ const NavDetailsList = [
     },{
         id: 4,
         navIcon: <MdNotificationsNone />,
-        toLink: '/',
+        toLink: '/orderreportstables',
     },{
         id: 5,
         navIcon: <MdOutlineSettings />,
-        toLink: '/',
+        toLink: '/formsentry',
     },{
         id: 6,
         navIcon: <TbMail />,
@@ -49,11 +49,11 @@ const Navbar = () => {
     return (
         <div className='nav-bar-container'>
             <img src='/images/restaurent-logo.jpeg' className='website-logo' />
-            <ul className='nav-ul-container'>
+            <nav className='nav-ul-container'>
                 {NavDetailsList.map((item) => (
                     <NavItem details={item}  key={item.id} updateActiveNavId={updateActiveNavId} isActivNavId={item.id === activeNavId} />
                 ))}
-            </ul>
+            </nav>
         </div>
     )
 }

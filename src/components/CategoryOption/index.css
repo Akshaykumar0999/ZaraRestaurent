@@ -1,0 +1,42 @@
+.entry-forms-category-card {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+.category-icon-card {
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #b7b6b6;
+}
+
+.entry-category-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.manage-category-name {
+    font-size: 17px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.manage-category-des {
+    font-size: 13px;
+    font-weight: 400;
+    color: #b7b6b6;
+}
+.active-li-styles {
+    background-color: #f5825f38;
+    border-radius: 10px;
+}
+.active-category-name {
+    color: #c86152;
+}
