@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './index.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser } from '../../store/AuthSlice'
 
 const Login = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [iserrorMsg, setErrorMsg] = useState(false)
+    const {auth}=useSelector((state)=>state);
+    const dispatch=useDispatch();
+    
     const navigate = useNavigate()
     const onChangeUsername = (e) => {
         setUsername(e.target.value)
@@ -38,6 +43,7 @@ const Login = () => {
         const fetchedData = await response.json()
         console.log(fetchedData)
         if (fetchedData.token) {
+            dispatch(setUser({token:fetchedData.token,user:fetchedData.user}))
             onSuccessSubmit(fetchedData.token)
         } else {
             onFailureSubmit(fetchedData.message)
