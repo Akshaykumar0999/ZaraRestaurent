@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import DishesTabItem from '../DishesTabItem';
 import Navbar from '../Navbar'
 import './index.css'
@@ -8,6 +8,8 @@ import DishDetailsCard from '../DishDetailsCard';
 import CartList from '../CartList';
 import { useDispatch, useSelector } from 'react-redux';
 import {add,remove,increment,decrement,setTotalAmount, clearCart} from "../../store/cartSlice";
+import { setBill } from '../../store/billSlice';
+import { BillState } from '../BillComponent';
 const RestroItemsTabList = [
     {
         TabId: 'HOTDISHES',
@@ -92,6 +94,8 @@ const RestroItemsTabList = [
 const Home = () => {
     const dispatch=useDispatch();
     const {cart}=useSelector((state)=>state);
+
+    const {handlePrintBill}=useContext(BillState);
     console.log(cart.cart.length)
     useEffect(()=>{
         dispatch(setTotalAmount());
@@ -328,7 +332,12 @@ const Home = () => {
                                   
                                     localStorage.setItem("orderId",res.order_id);
                                     alert(res.message);
-                                    dispatch(clearCart())
+                                    dispatch(setBill({...cart,orderId:res.order_id}));
+
+                                    dispatch(clearCart());
+                                    setTimeout(()=>{
+                                        handlePrintBill();
+                                    },500)
                                     return;
                                 }
                                 alert(res.message);
