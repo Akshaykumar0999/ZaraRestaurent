@@ -80,6 +80,7 @@ const Home = () => {
     const [AllTabList, setAllTabList] = useState([])
     const [ActiveTabItem, setActiveTabItem] = useState(RestroItemsTabList[0].TabId)
     const [selectedTableNo, setSelectedTableNo] = useState(1)
+    const [tableModelShow,setTablesModelShow]=useState(false);
     const [tableNo, setTableNo] = useState(1)
     const [cartDishesList, setCartDishesList] = useState([])
     let showdate = new Date();
@@ -292,10 +293,10 @@ const Home = () => {
                     
                 </div>
 
-
+                 {TableNumbers()}
             </div>
-            {TableNumbers()}
-        </div>
+
+    
     )
 }
 

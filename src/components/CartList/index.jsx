@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 import { useDispatch, useSelector } from 'react-redux';
-import { remove } from '../../store/cartSlice';
-=======
-import { useDispatch } from 'react-redux';
+
 import { remove,increment,decrement} from '../../store/cartSlice';
->>>>>>> origin/main
 import './index.css'
 import { AiOutlineDelete,AiFillPlusSquare,AiFillMinusSquare } from "react-icons/ai";
 import { FaSquarePlus } from "react-icons/fa6";
@@ -17,16 +13,13 @@ const CartList = ({cartItemmDetails, onChangeQtyItem}) => {
     return (
         <div className='table-order-cart-list-card'>
             <tr className='table-order-cart-list-items'>
-<<<<<<< HEAD
                 <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p style={{marginBottom: '0px'}}>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
-=======
                 <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
                 <button className='order-cart-delete-button' onClick={()=>{
                     dispatch(decrement(id))
                 }}>
                 <AiFillMinusSquare/>
                 </button>
->>>>>>> origin/main
                 <td className='table-cart-header-qty'><input type='text' className='qty-input' placeholder={qty} onChange={onChangeQnty} /></td>
                 <button className='order-cart-delete-button' onClick={()=>{
                     dispatch(increment(id));
