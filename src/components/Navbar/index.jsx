@@ -33,7 +33,7 @@ const NavDetailsList = [
     },{
         id: 6,
         navIcon: <TbMail />,
-        toLink: '/',
+        toLink: '/b',
     },{
         id: 7,
         navIcon: <MdLogout />,
@@ -49,11 +49,11 @@ const Navbar = () => {
     return (
         <div className='nav-bar-container'>
             <img src='/images/restaurent-logo.jpeg' className='website-logo' />
-            <nav className='nav-ul-container'>
+            <ul className='nav-ul-container'>
                 {NavDetailsList.map((item) => (
-                    <NavItem details={item}  key={item.id} updateActiveNavId={updateActiveNavId} isActivNavId={item.id === activeNavId} />
+                    <NavItem details={item}  key={item.id} updateActiveNavId={updateActiveNavId} isActive={item.id === activeNavId} />
                 ))}
-            </nav>
+            </ul>
         </div>
     )
 }

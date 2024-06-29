@@ -1,0 +1,35 @@
+.order-cart-delete-button {
+    width: 35px;
+    height: 30px;
+    background-color: transparent;
+    border: 1px solid #e78862;
+    border-radius: 5px;
+    padding: 2px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e78862;
+    margin-left: 30px;
+}
+.order-cart-comment-input {
+    width: 80%;
+    height: 30px;
+    background-color: #363636;
+    border: 1px solid #c0c0c0;
+    border-radius: 5px;
+    padding: 2px 8px;
+    color: #ffffff;
+    border: none;
+} 
+.cart-rate-of-item {
+    font-size: 12px;
+    font-weight: 300;
+    color: #ffffff;
+}
+.comment-cart-card {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 8px;
+}

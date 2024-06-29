@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { remove } from '../../store/cartSlice';
 import './index.css'
 import { AiOutlineDelete } from "react-icons/ai";
@@ -12,7 +12,7 @@ const CartList = ({cartItemmDetails, onChangeQtyItem}) => {
     return (
         <div className='table-order-cart-list-card'>
             <tr className='table-order-cart-list-items'>
-                <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
+                <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p style={{marginBottom: '0px'}}>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
                 <td className='table-cart-header-qty'><input type='text' className='qty-input' placeholder={qty} onChange={onChangeQnty} /></td>
                 <td className='table-cart-header-qty'>{subTotal}<span className='price-text'>Rs</span></td>
             </tr>

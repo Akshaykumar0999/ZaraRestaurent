@@ -154,17 +154,17 @@ const DashBoard = () => {
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
     const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
+        return (
+            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+                {`${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
 
 
     return (
@@ -283,14 +283,13 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
                                 </Pie>
                             </PieChart>
                             <div className='colors-names'>
-                                <p className='pieschart-names'><FaSquare style={{color: '#0088FE', height: '10px', width: '10px', marginRight: '10px'}} />{data[0].name}</p>
-                                <p className='pieschart-names'><FaSquare style={{color: '#00C49F', height: '10px', width: '10px', marginRight: '10px'}} />{data[1].name}</p>
-                                <p className='pieschart-names'><FaSquare style={{color: '#FFBB28', height: '10px', width: '10px', marginRight: '10px'}} />{data[2].name}</p>
+                                <p className='pieschart-names'><FaSquare style={{ color: '#0088FE', height: '10px', width: '10px', marginRight: '10px' }} />{data[0].name}</p>
+                                <p className='pieschart-names'><FaSquare style={{ color: '#00C49F', height: '10px', width: '10px', marginRight: '10px' }} />{data[1].name}</p>
+                                <p className='pieschart-names'><FaSquare style={{ color: '#FFBB28', height: '10px', width: '10px', marginRight: '10px' }} />{data[2].name}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     )

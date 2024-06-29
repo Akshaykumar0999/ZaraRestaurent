@@ -1,3 +1,10 @@
+.home-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 .entry-forms-main-card {
     width: 95%;
     height: 100%;
@@ -84,6 +91,7 @@
     border-color: #ff6c23a8;
     border-radius: 10px;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 .add-product-sub-card{
     width: 70%;
@@ -132,4 +140,33 @@
     font-size: 12px;
     font-weight: 400;
     color: #dedede;
+}
+
+.popup-container {
+    background-color: #ffffff;
+    bottom: 500px;
+    width: 300px;
+    height: 300px;
+}
+
+.model-input-label {
+    font-size: 17px; font-weight: 500;color: #343434; margin-bottom: 5px;
+}
+.model-input-card {
+    height: 40px;
+    border-radius: 5px;
+    color: #343434;
+    padding: 3px;
+    border: 1px solid #343434;
+}
+.model-selct-card {
+    width: 100%;
+    height: 40px;
+    color: #343434;
+    border-radius: 5px
+}
+.model-button-card {
+    background-color: #f28459;
+    border-radius: 10px;
+    margin-top: 20px;
 }
