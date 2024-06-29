@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import DishesTabItem from '../DishesTabItem';
 import Navbar from '../Navbar'
 import './index.css'
@@ -7,8 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import DishDetailsCard from '../DishDetailsCard';
 import CartList from '../CartList';
 import { useDispatch, useSelector } from 'react-redux';
-import { add, remove, increment, decrement, setTotalAmount, clearCart } from "../../store/cartSlice";
-
+import {add,remove,increment,decrement,setTotalAmount, clearCart} from "../../store/cartSlice";
 const RestroItemsTabList = [
     {
         TabId: 'HOTDISHES',
@@ -71,11 +70,10 @@ const TableNumberList = [
 
 
 const Home = () => {
-    const [tableModelShow, setTablesModelShow] = useState(false)
-    const dispatch = useDispatch();
-    const { cart } = useSelector((state) => state);
-    // console.log(cart.cart.length)
-    useEffect(() => {
+    const dispatch=useDispatch();
+    const {cart}=useSelector((state)=>state);
+    console.log(cart.cart.length)
+    useEffect(()=>{
         dispatch(setTotalAmount());
     },)
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
@@ -253,45 +251,43 @@ const Home = () => {
                 </table>
 
 
-                <div className='order-cart-pric-container'>
-                    <div className='discount-card'>
-                        <h3 className='discount-headre'>Discount</h3>
-                        <p className='discount-value'>0<span className='price-text'>Rs</span></p>
-                    </div>
-                    <div className='discount-card'>
-                        <h3 className='discount-headre'>Subtotal</h3>
-                        <p className='discount-value'>{cart.totalAmount}<span className='price-text'>Rs</span></p>
-                    </div>
-                    <div className='cart-buttons-card'>
-                        <button className='order-place-button'>Place Order</button>
-                        <button className='Check-out-button' onClick={async () => {
-                        try {
-                            const response = await fetch(`https://resbackend.gharxpert.in/place_order2`, {
-                                method: "POST",
-                                headers: {
-                                    "Authorization": localStorage.getItem('token')
-                                    , "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify(cart)
-
-                            })
-                            const res = await response.json();
-                            console.log(res);
-                            if (res.order_id) {
-
-
-
-                                localStorage.setItem("orderId", res.order_id);
+                    <div className='order-cart-pric-container'>
+                        <div className='discount-card'>
+                            <h3 className='discount-headre'>Discount</h3>
+                            <p className='discount-value'>0<span className='price-text'>Rs</span></p>
+                        </div>
+                        <div className='discount-card'>
+                            <h3 className='discount-headre'>Subtotal</h3>
+                            <p className='discount-value'>{cart.totalAmount}<span className='price-text'>Rs</span></p>
+                        </div>
+                        <button className='order-place-button' onClick={async()=>{
+                            try {
+                                const response=await fetch(`https://resbackend.gharxpert.in/place_order2`,{
+                                    method:"POST",
+                                    headers:{
+                                        "Authorization" : localStorage.getItem('token')     
+                                        ,"Content-Type" : "application/json"
+                                    },
+                                    body : JSON.stringify(cart)
+                                    
+                                })
+                                const res=await response.json();
+                                console.log(res);
+                                if(res.order_id){
+                                    
+                                    
+                                  
+                                    localStorage.setItem("orderId",res.order_id);
+                                    alert(res.message);
+                                    dispatch(clearCart())
+                                    return;
+                                }
                                 alert(res.message);
-                                dispatch(clearCart())
-                                return;
+                              
+                            } catch (error) {
+                                alert(error.message);
                             }
-                            alert(res.message);
-
-                        } catch (error) {
-                            alert(error.message);
-                        }
-                    }}>Check Out</button>
+                        }}>Continue to Place Order</button>
                     </div>
                     
                 </div>

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 const initialState = JSON.parse(localStorage.getItem("state")) ?? {
         cart:[],
@@ -16,11 +17,25 @@ export const cartSlice= createSlice({
         add:(state,action)=>{
             console.log(action)
             let item=action.payload;
-            item={...item,qty:1}
+            console.log(item.id)
+            let contains=state.cart.forEach((elem)=>{
+                if(elem.id==item.id){
+                    return true;
+                }else{
+                    return false;
+                }
+            })
+            console.log(contains)
+                if(contains){
+                    toast("item already in cart")
+                }else{
+                    item={...item,qty:1}
             item.subTotal=(parseFloat(item.qty*item.price).toFixed(2));
             state.cart.push(item);
             state.totalAmount=state.totalAmount+action.payload.qty*action.payload.price;
             localStorage.setItem('state',JSON.stringify(state));
+                }
+            
         },
         remove:(state,action)=>{
             console.log("clickemed" ,action.payload)
@@ -29,20 +44,20 @@ export const cartSlice= createSlice({
             localStorage.setItem('state',JSON.stringify(state));
         },
         increment:(state,action)=>{
+            console.log(action.payload)
             const indexInCart=state.cart.findIndex((elem)=>elem.id==action.payload);
-            state.cart[indexInCart].qty=+1;
+            console.log(state.cart[indexInCart].qty)
+            state.cart[indexInCart].qty=state.cart[indexInCart].qty+1;
             state.cart[indexInCart].subTotal=(parseFloat(state.cart[indexInCart].qty*state.cart[indexInCart].price).toFixed(2));
             localStorage.setItem('state',JSON.stringify(state));
         }, 
         decrement:(state,action)=>{
             const indexInCart=state.cart.findIndex((elem)=>elem.id==action.payload);
             if(state.cart[indexInCart].qty>1){
-                state.cart[indexInCart].qty=-1;
+                state.cart[indexInCart].qty=state.cart[indexInCart].qty-1;
                 state.cart[indexInCart].subTotal=(parseFloat(state.cart[indexInCart].qty*state.cart[indexInCart].price).toFixed(2));
-            
-                
             }else{
-                state.cart.filter((elem)=>elem.id==action.payload);
+                state.cart=state.cart.filter((elem)=>elem.id==action.payload);
             }
             localStorage.setItem('state',JSON.stringify(state));
             
