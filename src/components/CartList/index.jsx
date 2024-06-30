@@ -13,7 +13,7 @@ const CartList = ({cartItemmDetails, onChangeQtyItem}) => {
     return (
         <div className='table-order-cart-list-card'>
             <tr className='table-order-cart-list-items'>
-                <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p style={{marginBottom: '0px'}}>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
+               
                 <td className='table-cart-header-name'><img src={imageUrl} className='table-cart-image' /><div><p>{name}</p><span className='cart-rate-of-item'>{price}</span><span className='price-text'>Rs</span></div></td>
                 <button className='order-cart-delete-button' onClick={()=>{
                     dispatch(decrement(id))

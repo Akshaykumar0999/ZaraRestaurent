@@ -7,28 +7,10 @@ import Modal from 'react-bootstrap/Modal';
 import DishDetailsCard from '../DishDetailsCard';
 import CartList from '../CartList';
 import { useDispatch, useSelector } from 'react-redux';
-import {add,remove,increment,decrement,setTotalAmount, clearCart} from "../../store/cartSlice";
-const RestroItemsTabList = [
-    {
-        TabId: 'HOTDISHES',
-        TabName: 'Hot Dishes',
-    }, {
-        TabId: 'COLDDISHES',
-        TabName: 'Cold Dishes',
-    }, {
-        TabId: 'SOUP',
-        TabName: 'Soup',
-    }, {
-        TabId: 'GRILL',
-        TabName: 'Grill',
-    }, {
-        TabId: 'APPETIZER',
-        TabName: 'Appetizer',
-    }, {
-        TabId: 'DESSERT',
-        TabName: 'Dessert',
-    },
-]
+import {add,remove,increment,decrement,setTotalAmount, clearCart, setOrderType} from "../../store/cartSlice";
+import { setBill } from '../../store/billSlice';
+import { BillState } from '../BillComponent';
+
 
 const TableNumberList = [
     {
@@ -70,15 +52,37 @@ const TableNumberList = [
 
 
 const Home = () => {
+    
     const dispatch=useDispatch();
-    const {cart}=useSelector((state)=>state);
+    const {cart,auth}=useSelector((state)=>state);
+    const [orderTypes,setOrderTypes]=useState([]);
     console.log(cart.cart.length)
     useEffect(()=>{
         dispatch(setTotalAmount());
-    },)
+    },[cart.cart])
+    useEffect(()=>{
+        if(auth.user.roleId==2){
+            dispatch(setOrderType(11));
+        }
+        if(auth.user.roleId==1){
+            dispatch(setOrderType(12));
+        }
+    },[auth.user])
+    useEffect(()=>{ 
+        fetch("http://localhost:8002/getOrderTypes", {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data) => data.json()).then((res) => {
+           
+            setOrderTypes(res.orderTypes);
+        })
+            .catch((error) => { console.log(error) });
+    },[])
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
     const [AllTabList, setAllTabList] = useState([])
-    const [ActiveTabItem, setActiveTabItem] = useState(RestroItemsTabList[0].TabId)
+    const [ActiveTabItem, setActiveTabItem] = useState()
     const [selectedTableNo, setSelectedTableNo] = useState(1)
     const [tableModelShow,setTablesModelShow]=useState(false);
     const [tableNo, setTableNo] = useState(1)
@@ -87,7 +91,8 @@ const Home = () => {
     let todaysDate = showdate.toUTCString();
     const currentDate = todaysDate.slice(0, 16)
 
-
+    
+    const {handlePrintBill}=useContext(BillState);
     useEffect(() => {
         fetch("https://resbackend.gharxpert.in/getCategories", {
             method: "GET",
@@ -98,9 +103,7 @@ const Home = () => {
             const updatedTabList = res.categories.map((eachList =>
             ({
                 id: eachList.id,
-                companyId: eachList.companyId,
-                categoryName: eachList.category_name,
-                description: eachList.description,
+                categoryName: eachList.name,
                 image: eachList.image,
                 createdAt: eachList.created_at,
                 updatedAt: eachList.updated_at,
@@ -200,7 +203,7 @@ const Home = () => {
                 <div className='All-dishes-headers-card'>
                     <h3 className='choose-dishes'>Choose Dishes</h3>
                     <div className='table-selector-container'>
-                        <p className='table-name'>Table</p>
+                        {/* <p className='table-name'>Table</p>
                         <select className='table-selctor-container' onChange={onChangeTabelNo}>
                             <option className='table-option'>1</option>
                             <option className='table-option'>2</option>
@@ -210,7 +213,7 @@ const Home = () => {
                             <option className='table-option'>6</option>
                             <option className='table-option'>7</option>
                             <option className='table-option'>8</option>
-                        </select>
+                        </select> */}
                     </div>
                 </div>
 
@@ -227,9 +230,16 @@ const Home = () => {
                 <h1 className='choose-dishes'>Order#1234567890</h1>
                 <div className='order-category-type'>
                     <div className='d-flex'>
-                        <button className='active-order-type'>Dine In</button>
-                        <button className='order-type'>To go</button>
-                        <button className='order-type'>Delivery</button>
+                    {
+                        orderTypes?.map((elem)=>{
+                            if(elem.roleId==auth?.user.roleId){
+                                return  <button key={elem.id} onClick={()=>{
+                                    dispatch(setOrderType(elem.id))
+                                }} className={`${cart.orderTypeId==elem.id?'active-order-type':'order-type'}`}>{elem.type}</button>
+                                    
+                            }
+                        })
+                    }
                     </div>
                     <button className='tables-order-type' onClick={TableModelShowCard}>Tables</button>
                 </div>
@@ -280,6 +290,11 @@ const Home = () => {
                                   
                                     localStorage.setItem("orderId",res.order_id);
                                     alert(res.message);
+                                    dispatch(setBill({...cart,orderId:res.order_id}));
+                                    setTimeout(()=>{
+                                        
+                                        handlePrintBill();
+                                    },500)
                                     dispatch(clearCart())
                                     return;
                                 }

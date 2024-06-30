@@ -9,7 +9,7 @@ const Bill=forwardRef((props,ref)=>{
     const {orderId,orderItems,totalAmount}=useSelector((state)=>state.bill);
 
     return(
-        <div ref={ref} className="bill--main" style={{width:"200px"}}>
+        <div ref={ref} className="bill--main" style={{width:"250px"}}>
              <div className="info--shop">
           
           {/* <div>
@@ -17,15 +17,15 @@ const Bill=forwardRef((props,ref)=>{
           
           </div> */}
     
-        {/* <div className="address noBorder">
-        <h3>Excellent cuts mbnr</h3>
+       <div className="address noBorder">
+        <h3>Zara Restaurant</h3>
           <p>#Main Branch 1-4-134/1,Kamala Nehru Colony</p>
           
   
       <p>Mahbubnagar,Telengana-509001</p>
       <p>Contact : 9949828232,9553952786,9959694106</p>
       
-      </div> */}
+      </div> 
       </div>
     
       <div className="flex between">
