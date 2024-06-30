@@ -69,7 +69,7 @@ const Home = () => {
         }
     },[auth.user])
     useEffect(()=>{ 
-        fetch("http://localhost:8002/getOrderTypes", {
+        fetch("https://resbackend.gharxpert.in/getOrderTypes", {
             method: "GET",
             headers: {
                 "Authorization": localStorage.getItem('token')
