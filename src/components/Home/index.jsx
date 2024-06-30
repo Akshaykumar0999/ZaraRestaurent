@@ -56,6 +56,7 @@ const Home = () => {
     const dispatch=useDispatch();
     const {cart,auth}=useSelector((state)=>state);
     const [orderTypes,setOrderTypes]=useState([]);
+    const [tables,setTables]=useState([]);
     console.log(cart.cart.length)
     useEffect(()=>{
         dispatch(setTotalAmount());
@@ -68,6 +69,17 @@ const Home = () => {
             dispatch(setOrderType(12));
         }
     },[auth.user])
+    useEffect(()=>{
+        fetch("http://localhost:8002/getTablesStat",{
+            method:"GET",
+            headers:{
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data)=>data.json())
+        .then((res)=>{
+            setTables(res.tables);
+        }).catch((error)=>{console.log(error)});
+    },[])
     useEffect(()=>{ 
         fetch("https://resbackend.gharxpert.in/getOrderTypes", {
             method: "GET",
@@ -161,15 +173,40 @@ const Home = () => {
 
     const TableNumbers = () => {
         return (
-            <Modal show={tableModelShow} onHide={() => setTablesModelShow(false)}>
+            <Modal show={tableModelShow} dialogClassName="modalWidthChange" onHide={() => setTablesModelShow(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title className='text-secondary'>Table No Management</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ul className='table-numbers-card'>
-                        {TableNumberList.map(eachTable => (
-                            <li className='table-button-li-card' key={eachTable.id} onClick={(id) => setTableNo(id)}>{eachTable.number}</li>
-                        ))}
+                        {tables.map(eachTable => {
+                            if(auth.user.roleId==2){
+                                return   <li className={`table-button-li-card ${eachTable.currentUserId==auth.user.id ? 'bg_blue' : `${eachTable.isAvailable  ? 'bg_green' : 'bg_red' }` }`} key={eachTable.id} onClick={(id) => setTableNo(id)}>
+                                <p>Table No : {eachTable.id}</p>
+                                <p>Name : {eachTable.name ? eachTable.name : "empty"}</p>
+                                {}
+                                <p>Chairs : {eachTable.seatingCapacity}</p>
+                                {eachTable.isAvailable ? <button className="btn btn-primary">Book</button> : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
+                           {
+                            eachTable.currentUserId==auth.user.id &&
+                             <button className="btn btn-info">check</button>
+                           }
+                            </li>
+                            }else{
+                                return   <li className={`table-button-li-card ${eachTable.currentUserId==auth.user.id ? 'bg_blue' : `${eachTable.isAvailable ? 'bg_green' : 'bg_red' }` }`} key={eachTable.id} onClick={(id) => setTableNo(id)}>
+                                <p>Table No : {eachTable.id}</p>
+                                <p>Name : {eachTable.name ? eachTable.name : "empty"}</p>
+                                
+                                <p>Chairs : {eachTable.seatingCapacity}</p>
+                                {eachTable.isAvailable ? "" : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
+                           {
+                            eachTable.isCheckOuted==1 &&
+                             <button className="btn btn-info">Payment</button>
+                           }
+                            </li>
+                            }
+                        }    
+                               )}
                     </ul>
                 </Modal.Body>
             </Modal>

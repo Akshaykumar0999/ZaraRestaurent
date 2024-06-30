@@ -9,7 +9,7 @@ const Bill=forwardRef((props,ref)=>{
     const {orderId,orderItems,totalAmount}=useSelector((state)=>state.bill);
 
     return(
-        <div ref={ref} className="bill--main" style={{width:"250px"}}>
+        <div ref={ref} className="bill--main" style={{width:"300px"}}>
              <div className="info--shop">
           
           {/* <div>

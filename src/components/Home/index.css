@@ -366,11 +366,12 @@
     align-items: center;
 }
 .table-button-li-card {
-    width: 50px;
-    height: 50px;
+    width: 200px;
+    height: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     color: #ff9500;
     list-style-type: none;
     border: 2px solid #ff9500;
@@ -378,4 +379,20 @@
     margin: 20px;
     font-size: 20px;
     font-weight: bold;
+}
+
+.bg_green{
+    background-color: rgb(0, 255, 208);
+}
+.bg_blue{
+    background-color: #626fe7;
+    color: white;
+}
+.bg_red{
+    background-color: rgb(210, 39, 39);
+    color: white;
+}
+
+.modalWidthChange{
+    min-width: 70vw;
 }
