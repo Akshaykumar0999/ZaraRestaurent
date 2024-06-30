@@ -186,7 +186,28 @@ const Home = () => {
                                 <p>Name : {eachTable.name ? eachTable.name : "empty"}</p>
                                 {}
                                 <p>Chairs : {eachTable.seatingCapacity}</p>
-                                {eachTable.isAvailable ? <button className="btn btn-primary">Book</button> : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
+                                {eachTable.isAvailable ? <button className="btn btn-primary" onClick={async()=>{
+                                    console.log("hello")
+                                    const response=await fetch(`http://localhost:8002/bookTable/${eachTable.id}`,{
+                                        method:"PATCH",
+                                        headers:{
+                                            "Authorization": localStorage.getItem('token')
+                                        }
+                                    });
+                                    const res=await response.json();
+                                    if(res.success){
+                                        fetch("http://localhost:8002/getTablesStat",{
+                                            method:"GET",
+                                            headers:{
+                                                "Authorization": localStorage.getItem('token')
+                                            }
+                                        }).then((data)=>data.json())
+                                        .then((res)=>{
+                                            setTables(res.tables);
+                                        }).catch((error)=>{console.log(error)});
+                                    }
+                                    alert(res.message);
+                                }}>Book</button> : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
                            {
                             eachTable.currentUserId==auth.user.id &&
                              <button className="btn btn-info">check</button>
