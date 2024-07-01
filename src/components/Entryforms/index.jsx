@@ -2,47 +2,47 @@ import Navbar from '../Navbar'
 import { useEffect, useState, useRef } from 'react';
 import './index.css'
 import { BsBalloonHeart, BsExclamationCircle } from "react-icons/bs";
-import { SiHomeassistantcommunitystore } from "react-icons/si";
 import { TbCircleDashedPercentage } from "react-icons/tb";
-import { IoIosLock } from "react-icons/io";
-import { FaRegBell } from "react-icons/fa";
+import { TbCategoryPlus } from "react-icons/tb";
+import {  IoIosPerson } from "react-icons/io";
 import CategoryOption from '../CategoryOption';
 import { BsFilter } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { MdEdit } from "react-icons/md";
+import { BiCategory } from "react-icons/bi";
 import Modal from 'react-bootstrap/Modal';
 
 
 const settingsList = [
     {
         id: 1,
-        categorySettingName: 'Appearence',
-        settingIcon: <BsBalloonHeart className='category-icon' />,
-        description: 'Dark and Light mode, Font size',
+        categorySettingName: 'Manage User',
+        settingIcon: <IoIosPerson className='category-icon' />,
+        description: 'Add, Edit Users',
     },
     {
         id: 2,
-        categorySettingName: 'Your Restaurent',
-        settingIcon: <SiHomeassistantcommunitystore className='category-icon' />,
-        description: 'Dark and Light mode, Font size',
-    },
-    {
-        id: 3,
         categorySettingName: 'Product Maganagement',
         settingIcon: <TbCircleDashedPercentage className='category-icon' />,
         description: 'Manage Your Product,Pricing.,etc',
     },
     {
-        id: 4,
+        id: 3,
         categorySettingName: 'Category Management',
-        settingIcon: <FaRegBell className='category-icon' />,
+        settingIcon: <BiCategory className='category-icon' />,
         description: 'Customize Your Categories',
     },
     {
-        id: 5,
+        id: 4,
         categorySettingName: 'Sub-Category Management',
-        settingIcon: <IoIosLock className='category-icon' />,
+        settingIcon: <TbCategoryPlus className='category-icon' />,
         description: 'Customize Your SubCategories',
+    },
+    {
+        id: 5,
+        categorySettingName: 'Appearence',
+        settingIcon: <BsBalloonHeart className='category-icon' />,
+        description: 'Dark and Light mode, Font size',
     },
     {
         id: 6,
@@ -301,9 +301,6 @@ const EntryForms = () => {
     }
 
 
-    
-
-
     // on-Submit-Update-Category-Data
     const onUpdateCatgeoryForm = async (event) => {
         event.preventDefault();
@@ -548,15 +545,55 @@ const EntryForms = () => {
     }
 
 
+    const UsersManager = () => {
+        return (
+            <div className='manage-categories-main-card'>
+                <div className="categories-manage-header">
+                    <h3 className='order-name'>Manage User</h3>
+                    <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage User</button>
+                </div>
+                <form className='users-main-card'>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>User Name</label>
+                        <input className='user-name-input-card' type='text' placeholder='User Name' />
+                    </div>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>User Mobile No</label>
+                        <input className='user-name-input-card' type='number' placeholder='Mobile No' />
+                    </div>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>User Emial</label>
+                        <input className='user-name-input-card' type='email' placeholder='User Eamil' />
+                    </div>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>User Password</label>
+                        <input className='user-name-input-card' type='password' placeholder='Password' />
+                    </div>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>Profile Image</label>
+                        <input className='user-name-input-card' type='file' placeholder='Profile Image' />
+                    </div>
+                    <div className='w-100'>
+                        <button type='submit' className='model-button-card' >Add User</button>
+                    </div>
+                </form>
+            </div>
+        )
+    }
+
+
 
     const AllManagementControlls = () => {
         switch (categoryActId) {
-            case 3:
+            case 1:
+                return UsersManager();
+            case 2:
                 return AddEditProductsManager();
-            case 4:
+            case 3:
                 return AddEditCategoryManager();
-            case 5:
+            case 4:
                 return AddEditSubCategoryManager();
+            
             default:
                 return (<div className='manage-categories-main-card'>
                     <h1 style={{ color: '#ffffff', marginTop: '25%', alignSelf: 'center', fontSize: '20px' }}>This page is cuurrntly not Available</h1>
