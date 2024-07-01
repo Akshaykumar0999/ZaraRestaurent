@@ -7,9 +7,12 @@ import Modal from 'react-bootstrap/Modal';
 import DishDetailsCard from '../DishDetailsCard';
 import CartList from '../CartList';
 import { useDispatch, useSelector } from 'react-redux';
-import {add,remove,increment,decrement,setTotalAmount, clearCart, setOrderType} from "../../store/cartSlice";
-import { setBill } from '../../store/billSlice';
+import {add,remove,increment,decrement,setTotalAmount, clearCart, setOrderType, setTableCart} from "../../store/cartSlice";
+import { setBill, setPaymentType, setTableBill } from '../../store/billSlice';
 import { BillState } from '../BillComponent';
+import { setCurrentOrder, setCurrentTable, setSelectedTableId, setTables } from '../../store/TableSlice';
+import { Form } from 'react-bootstrap';
+import { LuRefreshCcw } from 'react-icons/lu';
 
 
 const TableNumberList = [
@@ -52,12 +55,14 @@ const TableNumberList = [
 
 
 const Home = () => {
-    
+    const {orderId,orderItems,totalAmount}=useSelector((state)=>state.bill);
     const dispatch=useDispatch();
-    const {cart,auth}=useSelector((state)=>state);
+    const {cart,auth,tables}=useSelector((state)=>state);
     const [orderTypes,setOrderTypes]=useState([]);
-    const [tables,setTables]=useState([]);
-    console.log(cart.cart.length)
+    const [payModal,setPayModal]=useState(false);
+    const [paymentTypeId,setPaymentTypeId]=useState(1000);
+    // const [tables,setTables]=useState([]);
+    // console.log(cart.cart.length)
     useEffect(()=>{
         dispatch(setTotalAmount());
     },[cart.cart])
@@ -70,16 +75,45 @@ const Home = () => {
         }
     },[auth.user])
     useEffect(()=>{
-        fetch("http://localhost:8002/getTablesStat",{
+        fetch("https://resbackend.gharxpert.in/getTablesStat",{
             method:"GET",
             headers:{
                 "Authorization": localStorage.getItem('token')
             }
         }).then((data)=>data.json())
         .then((res)=>{
-            setTables(res.tables);
+            dispatch(setTables(res.tables));
         }).catch((error)=>{console.log(error)});
     },[])
+    useEffect(()=>{
+        console.log(tables.selectedTableId)
+        fetch(`https://resbackend.gharxpert.in/getTable/${tables.selectedTableId}`,{
+            method:"GET",
+            headers:{
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data)=>{
+            console.log(data)
+            return data.json()
+        }).then((res)=>{
+            
+            dispatch(setCurrentTable(res.table));
+            
+            if(res.order){
+                
+                dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
+            }
+        }).catch((error)=>{console.log(error)})
+        
+    },[tables.selectedTableId]);
+
+    useEffect(()=>{
+        if(tables.currentOrder.orderItems){
+            dispatch(setTableCart(tables.currentOrder.orderItems))
+        }
+        
+    },[tables.currentOrder])
+
     useEffect(()=>{ 
         fetch("https://resbackend.gharxpert.in/getOrderTypes", {
             method: "GET",
@@ -95,10 +129,10 @@ const Home = () => {
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
     const [AllTabList, setAllTabList] = useState([])
     const [ActiveTabItem, setActiveTabItem] = useState()
-    const [selectedTableNo, setSelectedTableNo] = useState(1)
+    // const [selectedTableNo, setSelectedTableNo] = useState(1)
     const [tableModelShow,setTablesModelShow]=useState(false);
     const [tableNo, setTableNo] = useState(1)
-    const [cartDishesList, setCartDishesList] = useState([])
+    // const [cartDishesList, setCartDishesList] = useState([])
     let showdate = new Date();
     let todaysDate = showdate.toUTCString();
     const currentDate = todaysDate.slice(0, 16)
@@ -156,7 +190,19 @@ const Home = () => {
     }
 
     const onClickSelectDish = (item) => {
+        if(cart.cart.find(elem=>elem.id===item.id)){
+            alert("already added")
+            return
+        }
+        if(auth.user.roleId==2){
+            if(tables.selectedTableId==0){
+                alert("please select a table") 
+            return; 
+            }
+             
+        }
         dispatch(add(item))
+        
     }
 
     const onChangeQtyItem = (value, id) => {
@@ -178,8 +224,23 @@ const Home = () => {
                     <Modal.Title className='text-secondary'>Table No Management</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                <div className='d-flex align-items-center gap-3 justify-content-center'>
+                <p className='my-2'>please refresh to get current status of tables</p>
+                <button onClick={()=>{
+                           fetch("https://resbackend.gharxpert.in/getTablesStat",{
+                            method:"GET",
+                            headers:{
+                                "Authorization": localStorage.getItem('token')
+                            }
+                        }).then((data)=>data.json())
+                        .then((res)=>{
+                            dispatch(setTables(res.tables));
+                        }).catch((error)=>{console.log(error)});
+                }}><LuRefreshCcw/></button>
+                </div>
                     <ul className='table-numbers-card'>
-                        {tables.map(eachTable => {
+                        
+                        {tables?.tables.map(eachTable => {
                             if(auth.user.roleId==2){
                                 return   <li className={`table-button-li-card ${eachTable.currentUserId==auth.user.id ? 'bg_blue' : `${eachTable.isAvailable  ? 'bg_green' : 'bg_red' }` }`} key={eachTable.id} onClick={(id) => setTableNo(id)}>
                                 <p>Table No : {eachTable.id}</p>
@@ -188,7 +249,8 @@ const Home = () => {
                                 <p>Chairs : {eachTable.seatingCapacity}</p>
                                 {eachTable.isAvailable ? <button className="btn btn-primary" onClick={async()=>{
                                     console.log("hello")
-                                    const response=await fetch(`http://localhost:8002/bookTable/${eachTable.id}`,{
+                                   try {
+                                    const response=await fetch(`https://resbackend.gharxpert.in/bookTable/${eachTable.id}`,{
                                         method:"PATCH",
                                         headers:{
                                             "Authorization": localStorage.getItem('token')
@@ -196,21 +258,41 @@ const Home = () => {
                                     });
                                     const res=await response.json();
                                     if(res.success){
-                                        fetch("http://localhost:8002/getTablesStat",{
+                                        const tableId=eachTable.id;
+                                        
+                                        dispatch(setSelectedTableId(tableId))
+                                        dispatch(setCurrentOrder({}));  
+                                        dispatch(clearCart());
+                                        fetch("https://resbackend.gharxpert.in/getTablesStat",{
                                             method:"GET",
                                             headers:{
                                                 "Authorization": localStorage.getItem('token')
                                             }
                                         }).then((data)=>data.json())
                                         .then((res)=>{
-                                            setTables(res.tables);
+                                            dispatch(setTables(res.tables))
+                                            setTablesModelShow(false)
                                         }).catch((error)=>{console.log(error)});
                                     }
                                     alert(res.message);
+                                   } catch (error) {
+                                    alert(error.message);
+                                   }
                                 }}>Book</button> : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
                            {
                             eachTable.currentUserId==auth.user.id &&
-                             <button className="btn btn-info">check</button>
+                             <button className="btn btn-info" onClick={()=>{
+                                
+                                
+                                if(eachTable.id!=tables.selectedTableId){
+                                    dispatch(setCurrentOrder({}));
+                                    dispatch(setSelectedTableId(eachTable.id));
+                                    dispatch(clearCart());
+                                    
+                                }
+                                setTablesModelShow(false)
+                                
+                             }}>check</button>
                            }
                             </li>
                             }else{
@@ -222,13 +304,82 @@ const Home = () => {
                                 {eachTable.isAvailable ? "" : <p>checkouted : {eachTable.isCheckOuted ? 'yes' : 'no'}</p>}
                            {
                             eachTable.isCheckOuted==1 &&
-                             <button className="btn btn-info">Payment</button>
+                             <button className="btn btn-info" onClick={()=>{
+                                dispatch(setSelectedTableId(eachTable.id))
+                                setPayModal(true)
+                                setTablesModelShow(false);
+                                fetch(`https://resbackend.gharxpert.in/getOrder/${eachTable.id}`,{
+                                    method:"GET",
+                                    headers:{
+                                        "Authorization": localStorage.getItem('token')
+                                    }
+                                }).then((data)=>data.json())
+                                .then((res)=>{
+                                    if(res.order){
+                                        dispatch(setTableBill({order:res.order,orderItems:res.orderItems}));
+                                    }
+                                })
+                                
+                             }} >Payment</button>
                            }
                             </li>
                             }
                         }    
                                )}
                     </ul>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+
+    const PayModal = () => {
+        return (
+            <Modal show={payModal}  onHide={() => setPayModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title className='text-secondary'>Table No -- {tables.selectedTableId} Payment</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                   <form action="">
+                    <p>Order-id : {orderId}</p>
+                   <p>select payment mode</p>
+                    <select name="paymentTypeId" onChange={(e)=>{
+                        
+                        setPaymentTypeId(e.target.value)
+                        dispatch(setPaymentType(e.target.value));
+                    }} id="">
+                        <option value="1000">cash</option>
+                        <option value="1001">UPI</option>
+                    </select>
+                    <p>OrderTotal : {totalAmount}</p>
+                    <p>total items : {orderItems.length}</p>
+                    <button className='order-place-button'  onClick={(e)=>{
+                        e.preventDefault();
+                        fetch(`https://resbackend.gharxpert.in/completeOrder/${tables.selectedTableId}`,{
+                            method:"PATCH",
+                            headers: {
+                                "Authorization": localStorage.getItem('token'),
+                                "Content-Type" : "application/json"
+                                
+                            },body:JSON.stringify({paymentTypeId})
+                        }).then((data)=>data.json())
+                        .then((res)=>{
+                            
+                            if(res.success){
+                                alert(res.message);
+                                handlePrintBill();
+                                setPayModal(false)
+                                return;
+                            }
+                            
+                            alert(res.message);
+                            setPayModal(false)
+                        }).catch((error)=>{
+                            alert(error.message)
+                        })
+                        
+                    }}>pay-now</button>
+                   </form>
+                    
                 </Modal.Body>
             </Modal>
         )
@@ -261,17 +412,7 @@ const Home = () => {
                 <div className='All-dishes-headers-card'>
                     <h3 className='choose-dishes'>Choose Dishes</h3>
                     <div className='table-selector-container'>
-                        {/* <p className='table-name'>Table</p>
-                        <select className='table-selctor-container' onChange={onChangeTabelNo}>
-                            <option className='table-option'>1</option>
-                            <option className='table-option'>2</option>
-                            <option className='table-option'>3</option>
-                            <option className='table-option'>4</option>
-                            <option className='table-option'>5</option>
-                            <option className='table-option'>6</option>
-                            <option className='table-option'>7</option>
-                            <option className='table-option'>8</option>
-                        </select> */}
+                        
                     </div>
                 </div>
 
@@ -285,7 +426,8 @@ const Home = () => {
                 </ul>
             </div>
             <div className='orders-list-cart-container'>
-                <h1 className='choose-dishes'>Order#1234567890</h1>
+                {/* <h1 className='choose-dishes'>Order</h1> */}
+                {auth.user?.roleId==2 && <h1 className='choose-dishes' >Selected Table : {tables.selectedTableId}</h1>}
                 <div className='order-category-type'>
                     <div className='d-flex'>
                     {
@@ -311,7 +453,7 @@ const Home = () => {
                     </thead>
                     <tbody className='table-body-container'>
                         <div className='cartList-ul-container'>
-                            {cart.cart.map(eachacartItem => (
+                            {cart.cart?.map(eachacartItem => (
                                 <CartList cartItemmDetails={eachacartItem} key={eachacartItem.id} onChangeQtyItem={onChangeQtyItem} />
                             ))}
                         </div>
@@ -329,44 +471,166 @@ const Home = () => {
                             <h3 className='discount-headre'>Subtotal</h3>
                             <p className='discount-value'>{cart.totalAmount}<span className='price-text'>Rs</span></p>
                         </div>
-                        <button className='order-place-button' onClick={async()=>{
-                            try {
-                                const response=await fetch(`https://resbackend.gharxpert.in/place_order2`,{
-                                    method:"POST",
-                                    headers:{
-                                        "Authorization" : localStorage.getItem('token')     
-                                        ,"Content-Type" : "application/json"
-                                    },
-                                    body : JSON.stringify(cart)
-                                    
-                                })
-                                const res=await response.json();
-                                console.log(res);
-                                if(res.order_id){
-                                    
-                                    
-                                  
-                                    localStorage.setItem("orderId",res.order_id);
-                                    alert(res.message);
-                                    dispatch(setBill({...cart,orderId:res.order_id}));
-                                    setTimeout(()=>{
+                        {
+                            auth?.user.roleId==1 &&
+                            <button className='order-place-button' onClick={async()=>{
+                                try {
+                                    const response=await fetch(`https://resbackend.gharxpert.in/place_order2`,{
+                                        method:"POST",
+                                        headers:{
+                                            "Authorization" : localStorage.getItem('token')     
+                                            ,"Content-Type" : "application/json"
+                                        },
+                                        body : JSON.stringify(cart)
                                         
-                                        handlePrintBill();
-                                    },500)
-                                    dispatch(clearCart())
+                                    })
+                                    const res=await response.json();
+                                    console.log(res);
+                                    if(res.order_id){
+                                        
+                                        
+                                      
+                                        localStorage.setItem("orderId",res.order_id);
+                                        alert(res.message);
+                                        dispatch(setBill({...cart,orderId:res.order_id}));
+                                        setTimeout(()=>{
+                                            
+                                            handlePrintBill();
+                                        },500)
+                                        dispatch(clearCart())
+                                        return;
+                                    }
+                                    alert(res.message);
+                                  
+                                } catch (error) {
+                                    alert(error.message);
+                                }
+                            }}>Continue to Place Order</button>
+                        }
+                        {
+                            
+                            (auth?.user.roleId==2 && tables.currentTable?.currentOrderId==null) &&
+                            <button className='order-place-button' onClick={async()=>{
+                                try {
+                                    const response=await fetch(`https://resbackend.gharxpert.in/place_order3`,{
+                                        method:"POST",
+                                        headers:{
+                                            "Authorization" : localStorage.getItem('token')     
+                                            ,"Content-Type" : "application/json"
+                                        },
+                                        body : JSON.stringify({...cart,tableId:tables.selectedTableId})
+                                        
+                                    })
+                                    const res=await response.json();
+                                    console.log(res);
+                                    if(res.order_id){
+                                        
+                                        
+                                      
+                                        localStorage.setItem("orderId",res.order_id);
+                                        alert(res.message);
+                                        fetch(`https://resbackend.gharxpert.in/getTable/${tables.selectedTableId}`,{
+                                            method:"GET",
+                                            headers:{
+                                                "Authorization": localStorage.getItem('token')
+                                            }
+                                        }).then((data)=>{
+                                            console.log(data)
+                                            return data.json()
+                                        }).then((res)=>{
+                                            dispatch(setCurrentTable(res.table));
+                                            if(res.order){
+                                                dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
+                                            }
+                                        }).catch((error)=>{console.log(error)})
+                                        return;
+                                    }
+                                    alert(res.message);
+                                  
+                                } catch (error) {
+                                    alert(error.message);
+                                }
+                            }}>Add Order</button>
+                        }
+                       <div className='d-flex gap-2'>
+                       {
+                            tables?.currentTable?.currentOrderId!=null && tables.currentTable.isCheckOuted==0 &&
+                            <button className='order-place-button' onClick={async()=>{
+                                try {
+                                    const response=await fetch(`https://resbackend.gharxpert.in/updateOrder/${tables.currentTable.currentOrderId}`,{
+                                        method:"PATCH",
+                                        headers:{
+                                            "Authorization" : localStorage.getItem('token')     
+                                            ,"Content-Type" : "application/json"
+                                        },
+                                        body : JSON.stringify(cart)
+                                        
+                                    })
+                                    const res=await response.json();
+                                    console.log(res);
+                                    if(res.order_id){
+                                        localStorage.setItem("orderId",res.order_id);
+                                        // alert(res.message);
+                                        // fetch(`https://resbackend.gharxpert.in/getTable/${tables.selectedTableId}`,{
+                                        //     method:"GET",
+                                        //     headers:{
+                                        //         "Authorization": localStorage.getItem('token')
+                                        //     }
+                                        // }).then((data)=>{
+                                        //     console.log(data)
+                                        //     return data.json()
+                                        // }).then((res)=>{
+                                        //     dispatch(setCurrentTable(res.table));
+                                        //     if(res.order){
+                                        //         dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
+                                        //     }
+                                        // }).catch((error)=>{console.log(error)})
+                                        // return;
+                                    }
+                                    alert(res.message);
+                                  
+                                } catch (error) {
+                                    alert(error.message);
+                                }
+                            }}>
+                                update  
+                            </button>
+                        }
+                        {
+                        auth?.user?.roleId==2 &&
+                        tables?.currentTable?.currentOrderId!=null &&
+                        <button className='order-place-button' style={{background:"#FFB4C2",color:"black"}} onClick={async()=>{
+                            try {
+                                const response=await fetch(`https://resbackend.gharxpert.in/checkout/${tables.selectedTableId}`,{
+                                    method:"PATCH",
+                                    headers:{
+                                        "Authorization": localStorage.getItem('token')
+                                    }
+                                });
+
+                                const res=await response.json();
+                                if(res.success){
+                                    alert(res.message);
+                                    dispatch(setCurrentTable(res.table));
                                     return;
                                 }
                                 alert(res.message);
-                              
                             } catch (error) {
                                 alert(error.message);
                             }
-                        }}>Continue to Place Order</button>
+                        }}>
+                                {
+                                    tables.currentTable.isCheckOuted==0 ? 'checkout ✔️' : 'uncheckout ❌'
+                                }
+                        </button>   
+                        }
+                       </div>
                     </div>
                     
                 </div>
 
                  {TableNumbers()}
+                 {PayModal()}
             </div>
 
     

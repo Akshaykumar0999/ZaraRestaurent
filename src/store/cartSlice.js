@@ -18,23 +18,14 @@ export const cartSlice= createSlice({
             console.log(action)
             let item=action.payload;
             console.log(item.id)
-            let contains=state.cart.forEach((elem)=>{
-                if(elem.id==item.id){
-                    return true;
-                }else{
-                    return false;
-                }
-            })
-            console.log(contains)
-                if(contains){
-                    toast("item already in cart")
-                }else{
-                    item={...item,qty:1}
+            
+            
+            item={...item,qty:1}
             item.subTotal=(parseFloat(item.qty*item.price).toFixed(2));
             state.cart.push(item);
             state.totalAmount=state.totalAmount+action.payload.qty*action.payload.price;
             localStorage.setItem('state',JSON.stringify(state));
-                }
+                
             
         },
         remove:(state,action)=>{
@@ -57,7 +48,7 @@ export const cartSlice= createSlice({
                 state.cart[indexInCart].qty=state.cart[indexInCart].qty-1;
                 state.cart[indexInCart].subTotal=(parseFloat(state.cart[indexInCart].qty*state.cart[indexInCart].price).toFixed(2));
             }else{
-                state.cart=state.cart.filter((elem)=>elem.id==action.payload);
+                state.cart=state.cart.filter((elem)=>elem.id!=action.payload);
             }
             localStorage.setItem('state',JSON.stringify(state));
             
@@ -80,10 +71,14 @@ export const cartSlice= createSlice({
             state.finalTotal=0;
             state.totalDiscount=0;
           localStorage.setItem('state',JSON.stringify(state));
+        },
+        setTableCart:(state,action)=>{
+            state.cart=action.payload;
+            localStorage.setItem('state',JSON.stringify(state));
         }
     }
 })
 
-export const {add,remove,increment,decrement,setTotalAmount,clearCart,setOrderType}=cartSlice.actions;
+export const {add,remove,increment,decrement,setTotalAmount,clearCart,setOrderType,setTableCart}=cartSlice.actions;
 
 export default cartSlice.reducer;

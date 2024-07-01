@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import './index.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../../store/AuthSlice'
+import { setSelectedTableId } from '../../store/TableSlice'
 
 const Login = () => {
     const [username, setUsername] = useState('')
@@ -44,6 +45,7 @@ const Login = () => {
         console.log(fetchedData)
         if (fetchedData.token) {
             dispatch(setUser({token:fetchedData.token,user:fetchedData.user}))
+            dispatch(setSelectedTableId(0));
             onSuccessSubmit(fetchedData.token)
         } else {
             onFailureSubmit(fetchedData.message)
