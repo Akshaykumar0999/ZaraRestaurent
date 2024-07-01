@@ -552,29 +552,53 @@ const EntryForms = () => {
                     <h3 className='order-name'>Manage User</h3>
                     <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage User</button>
                 </div>
-                <form className='users-main-card'>
+                <form className='users-main-card' ref={formRef}>
                     <div className='users-username-card'>
                         <label className='user-name-label'>User Name</label>
-                        <input className='user-name-input-card' type='text' placeholder='User Name' />
+                        <input className='user-name-input-card' name='name' type='text' placeholder='User Name' />
                     </div>
                     <div className='users-username-card'>
                         <label className='user-name-label'>User Mobile No</label>
-                        <input className='user-name-input-card' type='number' placeholder='Mobile No' />
+                        <input className='user-name-input-card' type='number'  name='phone' placeholder='Mobile No' />
                     </div>
                     <div className='users-username-card'>
                         <label className='user-name-label'>User Emial</label>
-                        <input className='user-name-input-card' type='email' placeholder='User Eamil' />
+                        <input className='user-name-input-card' type='email' name='email' placeholder='User Eamil' />
                     </div>
                     <div className='users-username-card'>
                         <label className='user-name-label'>User Password</label>
-                        <input className='user-name-input-card' type='password' placeholder='Password' />
+                        <input className='user-name-input-card' type='password' name='password' placeholder='Password' />
+                    </div>
+                    <div className='users-username-card'>
+                        <label className='user-name-label'>Select User Role</label>
+                        <select name="roleId" className='user-name-input-card'  id="">
+                            <option value="1">cashier</option>
+                            <option value="2">waiter</option>
+                        </select>
                     </div>
                     <div className='users-username-card'>
                         <label className='user-name-label'>Profile Image</label>
-                        <input className='user-name-input-card' type='file' placeholder='Profile Image' />
+                        <input className='user-name-input-card' type='file' name='image' placeholder='Profile Image' />
                     </div>
                     <div className='w-100'>
-                        <button type='submit' className='model-button-card' >Add User</button>
+                        <button type='submit' onClick={async(e)=>{
+                            e.preventDefault();
+                            const formData=new FormData(formRef.current);
+                            const response=await fetch(`https://resbackend.gharxpert.in/register`,{
+                                method:"POST",
+                                headers: {
+                                    "Authorization": localStorage.getItem('token'),
+
+                                },
+                                body: formData
+                            });
+                            const res=await response.json();
+                            console.log(res)
+                            if(res.success){
+                                alert(res.message)
+                            }
+                            alert(res.message);
+                        }} className='model-button-card' >Add User</button>
                     </div>
                 </form>
             </div>

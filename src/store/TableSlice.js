@@ -22,10 +22,12 @@ export const tableSlice=createSlice({
         },
         setCurrentTable:(state,action)=>{
             state.currentTable=action.payload;
+            
             localStorage.setItem('tables',JSON.stringify(state));
         },
         setCurrentOrder:(state,action)=>{
             state.currentOrder=action.payload;
+            console.log("setting current order done")
             localStorage.setItem('tables',JSON.stringify(state));
         }
     }

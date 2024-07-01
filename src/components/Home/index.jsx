@@ -138,7 +138,7 @@ const Home = () => {
     const currentDate = todaysDate.slice(0, 16)
 
     
-    const {handlePrintBill}=useContext(BillState);
+    const {handlePrintBill,handlePrintToken}=useContext(BillState);
     useEffect(() => {
         fetch("https://resbackend.gharxpert.in/getCategories", {
             method: "GET",
@@ -167,6 +167,7 @@ const Home = () => {
                 "Authorization": localStorage.getItem('token')
             }
         }).then((data) => data.json()).then((res) => {
+            console.log(res.products)
             const updatedList = res.products.map((eachList =>
             ({
                 id: eachList.id,
@@ -540,7 +541,13 @@ const Home = () => {
                                         }).then((res)=>{
                                             dispatch(setCurrentTable(res.table));
                                             if(res.order){
+                                                console.log(res)
+                                                console.log("setting order currorder")
                                                 dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
+
+                                                setTimeout(()=>{
+                                                    handlePrintToken();
+                                                },500)
                                             }
                                         }).catch((error)=>{console.log(error)})
                                         return;
@@ -568,24 +575,30 @@ const Home = () => {
                                     })
                                     const res=await response.json();
                                     console.log(res);
-                                    if(res.order_id){
+                                    if(res.orderId){
                                         localStorage.setItem("orderId",res.order_id);
                                         // alert(res.message);
-                                        // fetch(`https://resbackend.gharxpert.in/getTable/${tables.selectedTableId}`,{
-                                        //     method:"GET",
-                                        //     headers:{
-                                        //         "Authorization": localStorage.getItem('token')
-                                        //     }
-                                        // }).then((data)=>{
-                                        //     console.log(data)
-                                        //     return data.json()
-                                        // }).then((res)=>{
-                                        //     dispatch(setCurrentTable(res.table));
-                                        //     if(res.order){
-                                        //         dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
-                                        //     }
-                                        // }).catch((error)=>{console.log(error)})
-                                        // return;
+                                        fetch(`https://resbackend.gharxpert.in/getTable/${tables.selectedTableId}`,{
+                                            method:"GET",
+                                            headers:{
+                                                "Authorization": localStorage.getItem('token')
+                                            }
+                                        }).then((data)=>{
+                                            
+                                            return data.json()
+                                        }).then((res)=>{
+                                            dispatch(setCurrentTable(res.table));
+                                            if(res.order){
+                                               
+                                                dispatch(setCurrentOrder({order:res.order,orderItems:res.orderItems}))
+
+                                                setTimeout(()=>{
+                                                    handlePrintToken()
+                                                },1000)
+                                            }
+                                        }).catch((error)=>{console.log(error)})
+                                       
+                                        return;
                                     }
                                     alert(res.message);
                                   
