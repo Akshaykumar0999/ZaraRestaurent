@@ -1,5 +1,5 @@
 import Navbar from '../Navbar'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './index.css'
 import { BsBalloonHeart, BsExclamationCircle } from "react-icons/bs";
 import { SiHomeassistantcommunitystore } from "react-icons/si";
@@ -11,7 +11,6 @@ import { BsFilter } from "react-icons/bs";
 import { FiPlus } from "react-icons/fi";
 import { MdEdit } from "react-icons/md";
 import Modal from 'react-bootstrap/Modal';
-
 
 
 const settingsList = [
@@ -35,15 +34,15 @@ const settingsList = [
     },
     {
         id: 4,
-        categorySettingName: 'Notifiaction',
+        categorySettingName: 'Category Management',
         settingIcon: <FaRegBell className='category-icon' />,
-        description: 'Customize Your notification',
+        description: 'Customize Your Categories',
     },
     {
         id: 5,
-        categorySettingName: 'Security',
+        categorySettingName: 'Sub-Category Management',
         settingIcon: <IoIosLock className='category-icon' />,
-        description: 'Configure password, PIN..etc',
+        description: 'Customize Your SubCategories',
     },
     {
         id: 6,
@@ -54,16 +53,42 @@ const settingsList = [
 ]
 
 const EntryForms = () => {
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
     const [categoryActId, setCategoryActId] = useState(settingsList[0].id)
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
+    const [activeProductId, setActiveProductId] = useState(0)
 
+    const [showCategoryModel, setShowCatModle] = useState(false)
+    const [showEditCatgeory, setShowEditCatgeory] = useState(false)
+    const [activeCtegoryId, setActivecategoryID] = useState(0)
+
+    const [showsubCategoryModel, setShowSubCatModle] = useState(false)
+    const [showEditSubCatgeory, setShowEditSubCatgeory] = useState(false)
+    const [activeSubCtegoryId, setActiveSubcategoryID] = useState(0)
+
+    const formRef = useRef();
     const [lgShow, setLgShow] = useState(false);
     const [editShowModle, setEditShowModel] = useState(false)
     const changeCategory = (id) => {
         setCategoryActId(id)
     }
 
+    // Get Category Type Fetching 
+    useEffect(() => {
+        fetch("https://resbackend.gharxpert.in/getCategoryType", {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data) => data.json()).then((res) => {
 
+            setSubCategories(res.subcategories)
+        })
+            .catch((error) => { console.log(error) });
+    }, [])
+
+    // Get Product API Fetching
     useEffect(() => {
         fetch("https://resbackend.gharxpert.in/getProducts", {
             method: "GET",
@@ -85,6 +110,60 @@ const EntryForms = () => {
             .catch((error) => { console.log(error) });
     }, [])
 
+    //Get Categories API = 
+    useEffect(() => {
+        fetch("https://resbackend.gharxpert.in/getCategories", {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem('token')
+            }
+        }).then((data) => data.json()).then((res) => {
+            const updatedTabList = res.categories.map((eachList =>
+            ({
+                id: eachList.id,
+                name: eachList.name,
+                image: eachList.image,
+                createdAt: eachList.created_at,
+                updatedAt: eachList.updated_at,
+            })
+            ))
+            setCategories(updatedTabList)
+        })
+            .catch((error) => { console.log(error) });
+    }, [])
+
+
+    // on-Submit-Update-product-Data
+    const onUpdateProductForm = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(formRef.current);
+        try {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateProduct/${activeProductId}`, {
+                method: 'PUT',
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+
+            const result = await response.json();
+            console.log('Success:', result);
+            alert(result.message);
+            // Handle success (e.g., show a message, update state/UI)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+
+
+    }
+    //Add Product Open Module form
     const AddProductModel = () => {
         return (
             <Modal
@@ -137,7 +216,7 @@ const EntryForms = () => {
             </Modal>
         )
     }
-
+    //EditProduct POPUP Model form
     const EditProductModel = () => {
         return (
             <Modal
@@ -153,7 +232,7 @@ const EntryForms = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className='product-form-container'>
-                        <form className='product-form-card' >
+                        <form className='product-form-card' ref={formRef} onSubmit={onUpdateProductForm} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Product Name</label>
                                 <input className='model-input-card' name='name' type='text' placeholder='Products-Name' id='product-name' />
@@ -173,10 +252,11 @@ const EntryForms = () => {
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='category-types'>Product Category Type</label>
                                 <select className='model-selct-card' name='subCategoryid' id='category-types' >
-                                    <option className='options-card' value={11}>Chiken Dishes</option>
-                                    <option className='options-card' value={11}>Mutton Dishes</option>
-                                    <option className='options-card' value={11}>Fish Dishes</option>
-                                    <option className='options-card' value={11}>Cold Drinks</option>
+                                    {
+                                        subCategories?.map((elem) => {
+                                            return <option className='options-card' key={elem.id} value={elem.id}>{elem.name}</option>
+                                        })
+                                    }
                                 </select>
                             </div>
                             <div className='input-container'>
@@ -190,9 +270,298 @@ const EntryForms = () => {
             </Modal>
         )
     }
+    //setting management of products like Add Product, Edit Product 
+    const AddEditProductsManager = () => {
+        return (
+            <div className='manage-categories-main-card'>
+                <div className="categories-manage-header">
+                    <h3 className='order-name'>Product Management</h3>
+                    <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage Categories</button>
+                </div>
+                <ul className='manage-products-main-ul-card'>
+                    <li className='add-product-card' onClick={() => setLgShow(true)}>
+                        <div className='add-product-sub-card'>
+                            <FiPlus style={{ marginBottom: '15px' }} />
+                            <p>Add New Product</p>
+                        </div>
+                    </li>
+                    {AllRestroDishesList.map((eachitem) => (
+                        <li className='edit-product-card'>
+                            <div className='add-product-sub-card'>
+                                <img src={eachitem.imageUrl} className='edit-image' />
+                                <p className='edit-dish-name-styles'>{eachitem.name}</p>
+                                <p className='edit-dish-price-styles'>{eachitem.price}</p>
+                            </div>
+                            <button className='edit-button-card' onClick={() => (setEditShowModel(true), setActiveProductId(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit Dish</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
 
-    const newProductOpenModule = () => {
-        setLgShow(true)
+
+    
+
+
+    // on-Submit-Update-Category-Data
+    const onUpdateCatgeoryForm = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(formRef.current);
+        try {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateCategory/${activeCtegoryId}`, {
+                method: 'PUT',
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            console.log('Success:', result);
+            alert(result.message);
+            // Handle success (e.g., show a message, update state/UI)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    //Add category model
+    const AddCatagoryModel = () => {
+        return (
+            <Modal
+                size="lg"
+                show={showCategoryModel}
+                onHide={() => setShowCatModle(false)}
+                aria-labelledby="example-modal-sizes-title-lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                        Add Categeory
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='product-form-container'>
+                        <form className='product-form-card' >
+                            <div className='input-container' >
+                                <label className='model-input-label' htmlFor='product-name'>Category Name</label>
+                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
+                            </div>
+                            <div className='input-container'>
+                                <label className='model-input-label' htmlFor='Category-image'>Category Image</label>
+                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                            </div>
+                            <div className='w-100'>
+                                <button className='model-button-card' type='submit'>Add Category</button>
+                            </div>
+                        </form>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+    //Edit Catgegory model
+    const EditCatgeoryModel = () => {
+        return (
+            <Modal
+                size="lg"
+                show={showEditCatgeory}
+                onHide={() => setShowEditCatgeory(false)}
+                aria-labelledby="example-modal-sizes-title-lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                        Edit Categeory
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='product-form-container'>
+                        <form className='product-form-card' ref={formRef} onSubmit={onUpdateCatgeoryForm} >
+                            <div className='input-container' >
+                                <label className='model-input-label' htmlFor='product-name'>Category Name</label>
+                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
+                            </div>
+                            <div className='input-container'>
+                                <label className='model-input-label' htmlFor='Category-image'>Category Image</label>
+                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                            </div>
+                            <div className='w-100'>
+                                <button className='model-button-card' type='submit'>Edit Category</button>
+                            </div>
+                        </form>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+    //setting management of categories like Add Category, Edit Category 
+    const AddEditCategoryManager = () => {
+        return (
+            <div className='manage-categories-main-card'>
+                <div className="categories-manage-header">
+                    <h3 className='order-name'>Catgeory Management</h3>
+                    <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage Categories</button>
+                </div>
+                <ul className='manage-products-main-ul-card'>
+                    <li className='add-product-card' onClick={() => setShowCatModle(true)}>
+                        <div className='add-product-sub-card'>
+                            <FiPlus style={{ marginBottom: '15px' }} />
+                            <p>Add Category</p>
+                        </div>
+                    </li>
+                    {categories.map((eachitem) => (
+                        <li className='edit-product-card'>
+                            <div className='edit-catgeory-sub-card'>
+                                <p style={{ color: "#ffffff" }}>Category-Name</p>
+                                <p style={{ color: "#f28459" }}>{eachitem.name}</p>
+                            </div>
+                            <button className='edit-button-card' onClick={() => (setShowEditCatgeory(true), setActivecategoryID(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit Category</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
+
+
+    // on-Submit-Update-Sub-Category-Data
+    const onUpdateSubCatgeoryForm = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(formRef.current);
+        try {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateSubcategory/${activeSubCtegoryId}`, {
+                method: 'PUT',
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+            console.log('Success:', result);
+            alert(result.message);
+            // Handle success (e.g., show a message, update state/UI)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    //Add sub-category model form
+    const AddSubCatagoryModel = () => {
+        return (
+            <Modal
+                size="lg"
+                show={showsubCategoryModel}
+                onHide={() => setShowSubCatModle(false)}
+                aria-labelledby="example-modal-sizes-title-lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                        Add Sub-Categeory
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='product-form-container'>
+                        <form className='product-form-card' >
+                            <div className='input-container' >
+                                <label className='model-input-label' htmlFor='product-name'>Sub-Category Name</label>
+                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
+                            </div>
+                            <div className='input-container'>
+                                <label className='model-input-label' htmlFor='Category-image'>Sub-Category Image</label>
+                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                            </div>
+                            <div className='w-100'>
+                                <button className='model-button-card' type='submit'>Add Sub-Category</button>
+                            </div>
+                        </form>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+    //Edit Sub-Catgegory model
+    const EditSubCatgeoryModel = () => {
+        return (
+            <Modal
+                size="lg"
+                show={showEditSubCatgeory}
+                onHide={() => setShowEditSubCatgeory(false)}
+                aria-labelledby="example-modal-sizes-title-lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="example-modal-sizes-title-lg">
+                        Edit Sub-Categeory
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='product-form-container'>
+                        <form className='product-form-card' ref={formRef} onSubmit={onUpdateSubCatgeoryForm} >
+                            <div className='input-container' >
+                                <label className='model-input-label' htmlFor='subproduct-name'>Sub-Category Name</label>
+                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='subproduct-name' />
+                            </div>
+                            <div className='input-container'>
+                                <label className='model-input-label' htmlFor='Category-image'>Sub-Category Image</label>
+                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                            </div>
+                            <div className='w-100'>
+                                <button className='model-button-card' type='submit'>Edit SubCategory</button>
+                            </div>
+                        </form>
+                    </div>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+    //setting management of Sub-categories like Add SubCategory, Edit SubCategory 
+    const AddEditSubCategoryManager = () => {
+        return (
+            <div className='manage-categories-main-card'>
+                <div className="categories-manage-header">
+                    <h3 className='order-name'>Sub-Catgeory Management</h3>
+                    <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage Sub-Categories</button>
+                </div>
+                <ul className='manage-products-main-ul-card'>
+                    <li className='add-product-card' onClick={() => setShowSubCatModle(true)}>
+                        <div className='add-product-sub-card'>
+                            <FiPlus style={{ marginBottom: '15px' }} />
+                            <p>Add SubCategory</p>
+                        </div>
+                    </li>
+                    {subCategories.map((eachitem) => (
+                        <li className='edit-product-card'>
+                            <div className='edit-catgeory-sub-card'>
+                                <p style={{ color: "#ffffff" }}>SubCategory Name</p>
+                                <p style={{ color: "#f28459" }}>{eachitem.name}</p>
+                            </div>
+                            <button className='edit-button-card' onClick={() => (setShowEditSubCatgeory(true), setActiveSubcategoryID(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit SubCategory</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
+
+
+
+    const AllManagementControlls = () => {
+        switch (categoryActId) {
+            case 3:
+                return AddEditProductsManager();
+            case 4:
+                return AddEditCategoryManager();
+            case 5:
+                return AddEditSubCategoryManager();
+            default:
+                return (<div className='manage-categories-main-card'>
+                    <h1 style={{ color: '#ffffff', marginTop: '25%', alignSelf: 'center', fontSize: '20px' }}>This page is cuurrntly not Available</h1>
+                </div>);
+        }
     }
     return (
         <div className='home-container'>
@@ -209,42 +578,17 @@ const EntryForms = () => {
                                     <CategoryOption optionDetails={eachItem} key={eachItem.id} changeCategory={changeCategory} isCategoryActive={categoryActId === eachItem.id} />
                                 ))}
                             </ul>
-                            {categoryActId === 3 ? 
-                            <div className='manage-categories-main-card'>
-                                <div className="categories-manage-header">
-                                    <h3 className='order-name'>Product Management</h3>
-                                    <button className='filter-card'><BsFilter style={{ marginRight: '10px' }} />Manage Categories</button>
-                                </div>
-                                <ul className='manage-products-main-ul-card'>
-                                    <li className='add-product-card' onClick={newProductOpenModule}>
-                                        <div className='add-product-sub-card'>
-                                            <FiPlus style={{ marginBottom: '15px' }} />
-                                            <p>Add New Product</p>
-                                        </div>
-                                    </li>
-                                    {AllRestroDishesList.map((eachitem) => (
-                                        <li className='edit-product-card'>
-                                            <div className='add-product-sub-card'>
-                                                <img src={eachitem.imageUrl} className='edit-image' />
-                                                <p className='edit-dish-name-styles'>{eachitem.name}</p>
-                                                <p className='edit-dish-price-styles'>{eachitem.price}</p>
-                                            </div>
-                                            <button className='edit-button-card' onClick={() => setEditShowModel(true)}><MdEdit style={{ marginRight: '10px' }} />Edit Dish</button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            :
-                            <div className='manage-categories-main-card'>
-                                <h1 style={{color : '#ffffff', marginTop: '25%', alignSelf: 'center', fontSize: '20px'}}>This page is cuurrntly not Available</h1>
-                            </div>
-                            }
+                            {AllManagementControlls()}
                         </div>
                     </div>
                 </div>
             </div>
             {AddProductModel()}
             {EditProductModel()}
+            {AddCatagoryModel()}
+            {EditCatgeoryModel()}
+            {AddSubCatagoryModel()}
+            {EditSubCatgeoryModel()}
         </div>
 
     )
