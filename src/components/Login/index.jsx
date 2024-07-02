@@ -68,7 +68,7 @@ const Login = () => {
                         </div>
                         <div className='login-username-password'>
                             <label className='input-label-card' htmlFor='username-password'>Password</label>
-                            <input className='input-card' type='text' id='username-password' onChange={onChangePassword} />
+                            <input className='input-card' type='password' id='username-password' onChange={onChangePassword} />
                         </div>
                         <button type='submit' onClick={(e)=>onSumbitCredentials(e)} className='form-button' >
                             Login
