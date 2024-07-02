@@ -223,7 +223,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='product-image'>Product Image</label>
-                                <input name='image' type='file' placeholder='Products-image' id='product-image' />
+                                <input name='image' accept='image/*' type='file' placeholder='Products-image' id='product-image' />
                             </div>
                             <button className='model-button-card' onClick={async(e)=>{
                                     e.preventDefault();
@@ -303,7 +303,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='product-image'>Product Image</label>
-                                <input name='image' type='file'  placeholder='Products-image' id='product-image' />
+                                <input name='image' accept='image/*' type='file'  placeholder='Products-image' id='product-image' />
                             </div>
                             <button className='model-button-card' type='submit'>Enter Product</button>
                         </form>
@@ -390,7 +390,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Category Image</label>
-                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                                <input name='image' accept='image/*' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
                                 <button className='model-button-card' onClick={async(e)=>{
@@ -450,7 +450,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Category Image</label>
-                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                                <input name='image' accept='image/*' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
                                 <button className='model-button-card' type='submit'>Edit Category</button>
@@ -538,7 +538,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Sub-Category Image</label>
-                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                                <input name='image' accept='image/*' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
                                 <button className='model-button-card' onClick={async(e)=>{
@@ -598,7 +598,7 @@ const EntryForms = () => {
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Sub-Category Image</label>
-                                <input name='image' type='file' placeholder='Category-image' id='Category-image' />
+                                <input name='image' accept='image/*' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
                                 <button className='model-button-card' type='submit'>Edit SubCategory</button>
@@ -673,7 +673,7 @@ const EntryForms = () => {
                     </div>
                     <div className='users-username-card'>
                         <label className='user-name-label'>Profile Image</label>
-                        <input className='user-name-input-card' type='file' name='image' placeholder='Profile Image' />
+                        <input className='user-name-input-card' type='file' name='image' accept='image/*' placeholder='Profile Image' />
                     </div>
                     <div className='w-100'>
                         <button type='submit' onClick={async(e)=>{
