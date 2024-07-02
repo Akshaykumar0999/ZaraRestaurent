@@ -195,7 +195,7 @@ const EntryForms = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className='product-form-container'>
-                        <form className='product-form-card' >
+                        <form className='product-form-card' ref={formRef} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Product Name</label>
                                 <input className='model-input-card' name='name' type='text' placeholder='Products-Name' id='product-name' />
@@ -225,7 +225,33 @@ const EntryForms = () => {
                                 <label className='model-input-label' htmlFor='product-image'>Product Image</label>
                                 <input name='image' type='file' placeholder='Products-image' id='product-image' />
                             </div>
-                            <button className='model-button-card' type='submit'>Enter Product</button>
+                            <button className='model-button-card' onClick={async(e)=>{
+                                    e.preventDefault();
+                                    const formData = new FormData(formRef.current);
+
+
+                                    try {
+                                        const response = await fetch(`https://resbackend.gharxpert.in/addProduct`, {
+                                            method: 'POST',
+                                            headers: {
+                                                "Authorization": localStorage.getItem('token')
+                                            },
+                                            body: formData
+                                        });
+                            
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                            
+                            
+                                        const result = await response.json();
+                                        console.log('Success:', result);
+                                        alert(result.message);
+                                        // Handle success (e.g., show a message, update state/UI)
+                                    } catch (error) {
+                                        console.error('Error:', error);
+                                    }
+                                }} type='submit'>Enter Product</button>
                         </form>
                     </div>
                 </Modal.Body>
@@ -357,7 +383,7 @@ const EntryForms = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className='product-form-container'>
-                        <form className='product-form-card' >
+                        <form className='product-form-card' ref={formRef} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Category Name</label>
                                 <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
@@ -367,7 +393,33 @@ const EntryForms = () => {
                                 <input name='image' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
-                                <button className='model-button-card' type='submit'>Add Category</button>
+                                <button className='model-button-card' onClick={async(e)=>{
+                                    e.preventDefault();
+                                    const formData = new FormData(formRef.current);
+
+
+                                    try {
+                                        const response = await fetch(`https://resbackend.gharxpert.in/addcategories`, {
+                                            method: 'POST',
+                                            headers: {
+                                                "Authorization": localStorage.getItem('token')
+                                            },
+                                            body: formData
+                                        });
+                            
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                            
+                            
+                                        const result = await response.json();
+                                        console.log('Success:', result);
+                                        alert(result.message);
+                                        // Handle success (e.g., show a message, update state/UI)
+                                    } catch (error) {
+                                        console.error('Error:', error);
+                                    }
+                                }} type='submit'>Add Category</button>
                             </div>
                         </form>
                     </div>
@@ -479,7 +531,7 @@ const EntryForms = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className='product-form-container'>
-                        <form className='product-form-card' >
+                        <form className='product-form-card' ref={formRef} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Sub-Category Name</label>
                                 <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
@@ -489,7 +541,33 @@ const EntryForms = () => {
                                 <input name='image' type='file' placeholder='Category-image' id='Category-image' />
                             </div>
                             <div className='w-100'>
-                                <button className='model-button-card' type='submit'>Add Sub-Category</button>
+                                <button className='model-button-card' onClick={async(e)=>{
+                                    e.preventDefault();
+                                    const formData = new FormData(formRef.current);
+
+
+                                    try {
+                                        const response = await fetch(`https://resbackend.gharxpert.in/addSubcategory`, {
+                                            method: 'POST',
+                                            headers: {
+                                                "Authorization": localStorage.getItem('token')
+                                            },
+                                            body: formData
+                                        });
+                            
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                            
+                            
+                                        const result = await response.json();
+                                        console.log('Success:', result);
+                                        alert(result.message);
+                                        // Handle success (e.g., show a message, update state/UI)
+                                    } catch (error) {
+                                        console.error('Error:', error);
+                                    }
+                                }} type='submit'>Add Sub-Category</button>
                             </div>
                         </form>
                     </div>
