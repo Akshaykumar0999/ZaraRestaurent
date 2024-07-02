@@ -19,11 +19,11 @@ const Bill=forwardRef((props,ref)=>{
     
        <div className="address noBorder">
         <h3>Zara Restaurant</h3>
-          <p>#Main Branch 1-4-134/1,Kamala Nehru Colony</p>
+          <p> Near Modern Raitu Bazar,AlMas Function Hall,  </p>
           
   
-      <p>Mahbubnagar,Telengana-509001</p>
-      <p>Contact : 9949828232,9553952786,9959694106</p>
+         <p>Mahbubnagar,Telengana-509001</p>
+      <p>Contact No : +91 8542354157</p>
       
       </div> 
       </div>

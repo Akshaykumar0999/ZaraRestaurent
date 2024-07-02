@@ -128,7 +128,7 @@ const Home = () => {
     },[])
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
     const [AllTabList, setAllTabList] = useState([])
-    const [ActiveTabItem, setActiveTabItem] = useState()
+    const [ActiveTabItem, setActiveTabItem] = useState(0)
     // const [selectedTableNo, setSelectedTableNo] = useState(1)
     const [tableModelShow,setTablesModelShow]=useState(false);
     const [tableNo, setTableNo] = useState(1)
@@ -161,7 +161,29 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        fetch("https://resbackend.gharxpert.in/getProducts", {
+        if(ActiveTabItem!==0){
+            fetch(`https://resbackend.gharxpert.in/getProducts?categoryId=${ActiveTabItem}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                }
+            }).then((data) => data.json()).then((res) => {
+                console.log(res.products)
+                const updatedList = res.products.map((eachList =>
+                ({
+                    id: eachList.id,
+                    name: eachList.name,
+                    imageUrl: eachList.image,
+                    price: eachList.price,
+                    quantity: 1,
+                })
+                ))
+                setAllRestroDishesList(updatedList)
+            })
+                .catch((error) => { console.log(error) });
+                return;
+        }
+        fetch(`https://resbackend.gharxpert.in/getProducts`, {
             method: "GET",
             headers: {
                 "Authorization": localStorage.getItem('token')
@@ -180,7 +202,7 @@ const Home = () => {
             setAllRestroDishesList(updatedList)
         })
             .catch((error) => { console.log(error) });
-    }, [])
+    }, [ActiveTabItem])
 
     const onClickActiveTab = (id) => {
         setActiveTabItem(id)
@@ -406,6 +428,11 @@ const Home = () => {
 
                 {/* Product Details Tab Selctor container */}
                 <ul className='tablist-ul-card'>
+                <DishesTabItem dishDetails={{
+                    id: 0,
+                    categoryName: "ALL",
+                    image: "NONE",
+                }} key={0} isActive={ActiveTabItem === 0} onClickActiveTab={onClickActiveTab} />
                     {AllTabList.map((eachDish) => <DishesTabItem dishDetails={eachDish} key={eachDish.id} isActive={ActiveTabItem === eachDish.id} onClickActiveTab={onClickActiveTab} />)}
                 </ul>
 
@@ -442,6 +469,9 @@ const Home = () => {
                         })
                     }
                     </div>
+                    <button className='tables-order-type' style={{background:"red",color:"white"}} onClick={()=>{
+                        dispatch(clearCart())
+                    }}>clear cart</button>
                     <button className='tables-order-type' onClick={TableModelShowCard}>Tables</button>
                 </div>
                 {/* orders acrt list table  */}
@@ -472,6 +502,7 @@ const Home = () => {
                             <h3 className='discount-headre'>Subtotal</h3>
                             <p className='discount-value'>{cart.totalAmount}<span className='price-text'>Rs</span></p>
                         </div>
+
                         {
                             auth?.user.roleId==1 &&
                             <button className='order-place-button' onClick={async()=>{

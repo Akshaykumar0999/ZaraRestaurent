@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import Navbar from '../Navbar'
 import { useEffect, useState, useRef } from 'react';
 import './index.css'
@@ -57,15 +58,15 @@ const EntryForms = () => {
     const [subCategories, setSubCategories] = useState([]);
     const [categoryActId, setCategoryActId] = useState(settingsList[0].id)
     const [AllRestroDishesList, setAllRestroDishesList] = useState([])
-    const [activeProductId, setActiveProductId] = useState(0)
+    const [activeProduct, setActiveProduct] = useState({})
 
     const [showCategoryModel, setShowCatModle] = useState(false)
     const [showEditCatgeory, setShowEditCatgeory] = useState(false)
-    const [activeCtegoryId, setActivecategoryID] = useState(0)
+    const [activeCtegory, setActivecategory] = useState(0)
 
     const [showsubCategoryModel, setShowSubCatModle] = useState(false)
     const [showEditSubCatgeory, setShowEditSubCatgeory] = useState(false)
-    const [activeSubCtegoryId, setActiveSubcategoryID] = useState(0)
+    const [activeSubCtegory, setActiveSubcategory] = useState(0)
 
     const formRef = useRef();
     const [lgShow, setLgShow] = useState(false);
@@ -76,61 +77,70 @@ const EntryForms = () => {
 
     // Get Category Type Fetching 
     useEffect(() => {
-        fetch("https://resbackend.gharxpert.in/getCategoryType", {
-            method: "GET",
-            headers: {
-                "Authorization": localStorage.getItem('token')
-            }
-        }).then((data) => data.json()).then((res) => {
-
-            setSubCategories(res.subcategories)
-        })
-            .catch((error) => { console.log(error) });
-    }, [])
+        if(showEditSubCatgeory==false && showsubCategoryModel==false){
+            fetch("https://resbackend.gharxpert.in/getCategoryType", {
+                method: "GET",
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                }
+            }).then((data) => data.json()).then((res) => {
+    
+                setSubCategories(res.subcategories)
+            })
+                .catch((error) => { console.log(error) });
+        }
+    }, [showEditSubCatgeory,showsubCategoryModel])
 
     // Get Product API Fetching
     useEffect(() => {
-        fetch("https://resbackend.gharxpert.in/getProducts", {
-            method: "GET",
-            headers: {
-                "Authorization": localStorage.getItem('token')
-            }
-        }).then((data) => data.json()).then((res) => {
-            const updatedList = res.products.map((eachList =>
-            ({
-                id: eachList.id,
-                name: eachList.name,
-                imageUrl: eachList.image,
-                price: eachList.price,
-                quantity: 1,
+        if(editShowModle==false && lgShow==false){
+            fetch("https://resbackend.gharxpert.in/getProducts", {
+                method: "GET",
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                }
+            }).then((data) => data.json()).then((res) => {
+                const updatedList = res.products.map((eachList =>
+                ({
+                    id: eachList.id,
+                    name: eachList.name,
+                    imageUrl: eachList.image,
+                    price: eachList.price,
+                    mrp:eachList.mrp,
+                    discount:eachList.discount,
+                    subCategoryId:eachList.subCategoryId,
+                    quantity: 1,
+                })
+                ))
+                setAllRestroDishesList(updatedList)
             })
-            ))
-            setAllRestroDishesList(updatedList)
-        })
-            .catch((error) => { console.log(error) });
-    }, [])
+                .catch((error) => { console.log(error) });
+        }
+    }, [editShowModle,lgShow])
 
     //Get Categories API = 
     useEffect(() => {
-        fetch("https://resbackend.gharxpert.in/getCategories", {
-            method: "GET",
-            headers: {
-                "Authorization": localStorage.getItem('token')
-            }
-        }).then((data) => data.json()).then((res) => {
-            const updatedTabList = res.categories.map((eachList =>
-            ({
-                id: eachList.id,
-                name: eachList.name,
-                image: eachList.image,
-                createdAt: eachList.created_at,
-                updatedAt: eachList.updated_at,
+        if(showEditCatgeory==false && showCategoryModel==false){
+            fetch("https://resbackend.gharxpert.in/getCategories", {
+                method: "GET",
+                headers: {
+                    "Authorization": localStorage.getItem('token')
+                }
+            }).then((data) => data.json()).then((res) => {
+                const updatedTabList = res.categories.map((eachList =>
+                ({
+                    id: eachList.id,
+                    name: eachList.name,
+                    image: eachList.image,
+                    createdAt: eachList.created_at,
+                    updatedAt: eachList.updated_at,
+                })
+                ))
+                setCategories(updatedTabList)
             })
-            ))
-            setCategories(updatedTabList)
-        })
-            .catch((error) => { console.log(error) });
-    }, [])
+                .catch((error) => { console.log(error) });
+        }
+    }, [showEditCatgeory,showCategoryModel])
 
 
     // on-Submit-Update-product-Data
@@ -139,7 +149,7 @@ const EntryForms = () => {
 
         const formData = new FormData(formRef.current);
         try {
-            const response = await fetch(`https://resbackend.gharxpert.in/updateProduct/${activeProductId}`, {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateProduct/${activeProduct.id}`, {
                 method: 'PUT',
                 headers: {
                     "Authorization": localStorage.getItem('token')
@@ -154,7 +164,13 @@ const EntryForms = () => {
 
             const result = await response.json();
             console.log('Success:', result);
+            if(result.status){
+                setEditShowModel(false);
+            }
+            setEditShowModel(false)
             alert(result.message);
+            
+            // editShowModle(false);
             // Handle success (e.g., show a message, update state/UI)
         } catch (error) {
             console.error('Error:', error);
@@ -235,33 +251,33 @@ const EntryForms = () => {
                         <form className='product-form-card' ref={formRef} onSubmit={onUpdateProductForm} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Product Name</label>
-                                <input className='model-input-card' name='name' type='text' placeholder='Products-Name' id='product-name' />
+                                <input className='model-input-card' name='name' type='text' defaultValue={activeProduct.name} placeholder='Products-Name' id='product-name' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Price'>Price</label>
-                                <input className='model-input-card' name='price' type='number' placeholder='Products-Price' id='Price' />
+                                <input className='model-input-card' name='price' type='number' defaultValue={activeProduct.price} placeholder='Products-Price' id='Price' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='MRP'>Product MRP</label>
-                                <input className='model-input-card' name='mrp' type='number' placeholder='MRP' id='MRP' />
+                                <input className='model-input-card' name='mrp' defaultValue={activeProduct.mrp} type='number' placeholder='MRP' id='MRP' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Discount'>Discount</label>
-                                <input className='model-input-card' name='discount' type='number' placeholder='Discount' id='Discount' />
+                                <input className='model-input-card' name='discount' defaultValue={activeProduct.discount} type='number' placeholder='Discount' id='Discount' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='category-types'>Product Category Type</label>
-                                <select className='model-selct-card' name='subCategoryid' id='category-types' >
+                                <select className='model-selct-card'  name='subCategoryId' id='category-types' >
                                     {
                                         subCategories?.map((elem) => {
-                                            return <option className='options-card' key={elem.id} value={elem.id}>{elem.name}</option>
+                                            return <option className='options-card' selected={elem.id==activeProduct.subCategoryId && 'selected'} key={elem.id} value={elem.id}>{elem.name}</option>
                                         })
                                     }
                                 </select>
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='product-image'>Product Image</label>
-                                <input name='image' type='file' placeholder='Products-image' id='product-image' />
+                                <input name='image' type='file'  placeholder='Products-image' id='product-image' />
                             </div>
                             <button className='model-button-card' type='submit'>Enter Product</button>
                         </form>
@@ -292,7 +308,7 @@ const EntryForms = () => {
                                 <p className='edit-dish-name-styles'>{eachitem.name}</p>
                                 <p className='edit-dish-price-styles'>{eachitem.price}</p>
                             </div>
-                            <button className='edit-button-card' onClick={() => (setEditShowModel(true), setActiveProductId(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit Dish</button>
+                            <button className='edit-button-card' onClick={() => (setEditShowModel(true), setActiveProduct(eachitem))}><MdEdit style={{ marginRight: '10px' }} />Edit Dish</button>
                         </li>
                     ))}
                 </ul>
@@ -306,7 +322,7 @@ const EntryForms = () => {
         event.preventDefault();
         const formData = new FormData(formRef.current);
         try {
-            const response = await fetch(`https://resbackend.gharxpert.in/updateCategory/${activeCtegoryId}`, {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateCategory/${activeCtegory.id}`, {
                 method: 'PUT',
                 headers: {
                     "Authorization": localStorage.getItem('token')
@@ -378,7 +394,7 @@ const EntryForms = () => {
                         <form className='product-form-card' ref={formRef} onSubmit={onUpdateCatgeoryForm} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='product-name'>Category Name</label>
-                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='product-name' />
+                                <input className='model-input-card' name='name' defaultValue={activeCtegory.name} type='text' placeholder='Category-Name' id='product-name' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Category Image</label>
@@ -414,7 +430,7 @@ const EntryForms = () => {
                                 <p style={{ color: "#ffffff" }}>Category-Name</p>
                                 <p style={{ color: "#f28459" }}>{eachitem.name}</p>
                             </div>
-                            <button className='edit-button-card' onClick={() => (setShowEditCatgeory(true), setActivecategoryID(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit Category</button>
+                            <button className='edit-button-card' onClick={() => (setShowEditCatgeory(true), setActivecategory(eachitem))}><MdEdit style={{ marginRight: '10px' }} />Edit Category</button>
                         </li>
                     ))}
                 </ul>
@@ -428,7 +444,7 @@ const EntryForms = () => {
         event.preventDefault();
         const formData = new FormData(formRef.current);
         try {
-            const response = await fetch(`https://resbackend.gharxpert.in/updateSubcategory/${activeSubCtegoryId}`, {
+            const response = await fetch(`https://resbackend.gharxpert.in/updateSubcategory/${activeSubCtegory.id}`, {
                 method: 'PUT',
                 headers: {
                     "Authorization": localStorage.getItem('token')
@@ -500,7 +516,7 @@ const EntryForms = () => {
                         <form className='product-form-card' ref={formRef} onSubmit={onUpdateSubCatgeoryForm} >
                             <div className='input-container' >
                                 <label className='model-input-label' htmlFor='subproduct-name'>Sub-Category Name</label>
-                                <input className='model-input-card' name='name' type='text' placeholder='Category-Name' id='subproduct-name' />
+                                <input className='model-input-card' name='name' defaultValue={activeSubCtegory.name} type='text' placeholder='Category-Name' id='subproduct-name' />
                             </div>
                             <div className='input-container'>
                                 <label className='model-input-label' htmlFor='Category-image'>Sub-Category Image</label>
@@ -531,12 +547,13 @@ const EntryForms = () => {
                         </div>
                     </li>
                     {subCategories.map((eachitem) => (
+                        // eslint-disable-next-line react/jsx-key
                         <li className='edit-product-card'>
                             <div className='edit-catgeory-sub-card'>
                                 <p style={{ color: "#ffffff" }}>SubCategory Name</p>
                                 <p style={{ color: "#f28459" }}>{eachitem.name}</p>
                             </div>
-                            <button className='edit-button-card' onClick={() => (setShowEditSubCatgeory(true), setActiveSubcategoryID(eachitem.id))}><MdEdit style={{ marginRight: '10px' }} />Edit SubCategory</button>
+                            <button className='edit-button-card' onClick={() => (setShowEditSubCatgeory(true), setActiveSubcategory(eachitem))}><MdEdit style={{ marginRight: '10px' }} />Edit SubCategory</button>
                         </li>
                     ))}
                 </ul>
