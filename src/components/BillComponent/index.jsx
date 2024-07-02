@@ -186,7 +186,7 @@ export const BillProvider=({children})=>{
       <div style={{display:"none"}}>
       <Bill ref={componentRef}/>
       </div>
-      <div style={{display:"block"}}>
+      <div style={{display:"none"}}>
       <TokenTable ref={tokenRef}/>
       </div>
   </BillState.Provider>
